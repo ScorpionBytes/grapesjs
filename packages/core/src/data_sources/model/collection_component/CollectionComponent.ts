@@ -1,4 +1,3 @@
-import { ComponentDefinitionDefined } from './../../../dom_components/model/types';
 import { isArray } from 'underscore';
 import Component from '../../../dom_components/model/Component';
 import { ComponentDefinition, ComponentOptions, ComponentProperties } from '../../../dom_components/model/types';
@@ -6,6 +5,7 @@ import { toLowerCase } from '../../../utils/mixins';
 import { ConditionDefinition } from '../conditional_variables/DataCondition';
 import DataSource from '../DataSource';
 import { DataVariableType } from '../DataVariable';
+import { ObjectAny } from '../../../common';
 
 export const CollectionVariableType = 'collection-component';
 // Represents the type for defining a loop’s data source.
@@ -48,8 +48,8 @@ export default class CollectionComponent extends Component {
       start_index = 0,
       end_index = Number.MAX_VALUE,
       dataSource = [],
-    } = config
-    let items: CollectionStateVariables[] = [];
+    } = config;
+    let items: any[] = [];
     switch (true) {
       case isArray(dataSource):
         items = dataSource;
@@ -58,14 +58,20 @@ export default class CollectionComponent extends Component {
         const id = dataSource.get('id')!;
         const resolvedPath = opt.em.DataSources.getValue(id, []);
         const keys = Object.keys(resolvedPath);
-        items = keys.map(key => resolvedPath[key]);
+        items = keys.map(key => ({
+          type: DataVariableType,
+          path: id + '.' + key,
+        }));
         break;
       case typeof dataSource === 'object' && dataSource.type === DataVariableType:
         const pathArr = dataSource.path.split('.');
         if (pathArr.length === 1) {
           const resolvedPath = opt.em.DataSources.getValue(dataSource.path, []);
           const keys = Object.keys(resolvedPath);
-          items = keys.map(key => resolvedPath[key]);
+          items = keys.map(key => ({
+            type: DataVariableType,
+            path: id + '.' + key,
+          }));
         } else {
           items = opt.em.DataSources.getValue(dataSource.path, []);
         }
@@ -73,12 +79,36 @@ export default class CollectionComponent extends Component {
       default:
     }
 
-    const components: ComponentDefinitionDefined[] = [];
+    const components: ComponentDefinition[] = [];
     const resolvedStartIndex = Math.max(0, start_index);
     const resolvedEndIndex = Math.min(items.length - 1, end_index);
+    const item = items[resolvedStartIndex];
+    let symbolMain;
+    const total_items = resolvedEndIndex - resolvedStartIndex + 1;
+    const innerMostCollectionItem = {
+      collection_name,
+      current_index: resolvedStartIndex,
+      current_item: item,
+      start_index: resolvedStartIndex,
+      end_index: resolvedEndIndex,
+      total_items: total_items,
+      remaining_items: total_items - (resolvedStartIndex + 1),
+    };
+
+    const allCollectionItem = {
+      ...props.collectionsItems,
+      [innerMostCollectionItem.collection_name ? innerMostCollectionItem.collection_name : 'innerMostCollectionItem']:
+        innerMostCollectionItem,
+      innerMostCollectionItem
+    }
+    const { clonedBlock, overrideKeys } = resolveBlockValues(allCollectionItem, block);
+    const type = opt.em.Components.getType(clonedBlock?.type || 'default');
+    const model = type.model;
+    const symbol = new model(clonedBlock, opt);
+    symbolMain = opt.em.Components.addSymbol(symbol);
+
     for (let index = resolvedStartIndex; index <= resolvedEndIndex; index++) {
       const item = items[index];
-      const total_items = resolvedEndIndex - resolvedStartIndex + 1;
       const innerMostCollectionItem = {
         collection_name,
         current_index: index,
@@ -89,15 +119,33 @@ export default class CollectionComponent extends Component {
         remaining_items: total_items - (index + 1),
       };
 
-      const allCollectionItems = {
+      const allCollectionItem = {
         ...props.collectionsItems,
         [innerMostCollectionItem.collection_name ? innerMostCollectionItem.collection_name : 'innerMostCollectionItem']:
           innerMostCollectionItem,
         innerMostCollectionItem
       }
+      const { overrideKeys } = resolveBlockValues(allCollectionItem, block);
+      const instance = opt.em.Components.addSymbol(symbolMain!);
+      const children: any[] = []
+      Object.keys(overrideKeys).length && instance!.setSymbolOverride(Object.keys(overrideKeys));
+      instance!.set(overrideKeys);
+      for (let i = 0; i < instance!.components().length; i++) {
+        const childBlock = block['components'][i];
+        const { overrideKeys } = resolveBlockValues(allCollectionItem, deepCloneObject(childBlock));
+        const child = opt.em.Components.addSymbol(symbolMain!.components().at(i))
+        Object.keys(overrideKeys).length && child!.setSymbolOverride(Object.keys(overrideKeys));
+        child!.set(overrideKeys)
+        children.push(child);
+      }
 
-      const component = resolveBlockValues(allCollectionItems, block);
-      components.push(component);
+      const componentJSON = instance?.toJSON();
+      const cmpDefinition = {
+        ...componentJSON,
+        components: children
+      };
+
+      components.push(cmpDefinition);
     }
 
     const conditionalCmptDef = {
@@ -139,9 +187,10 @@ function deepCloneObject<T extends Record<string, any> | null | undefined>(obj: 
   return clonedObj as T;
 }
 
-function resolveBlockValues(context: any, block: any): any {
+function resolveBlockValues(context: any, block: any) {
   const { innerMostCollectionItem } = context;
   const clonedBlock = deepCloneObject(block);
+  const overrideKeys: ObjectAny = {};
 
   if (typeof clonedBlock === 'object' && clonedBlock !== null) {
     const blockKeys = Object.keys(clonedBlock);
@@ -149,12 +198,13 @@ function resolveBlockValues(context: any, block: any): any {
     for (const key of blockKeys) {
       let blockValue = clonedBlock[key];
       if (key === 'collectionDefinition') continue;
+      let shouldBeOverridden = false;
 
       if (typeof blockValue === 'object' && blockValue !== null) {
+        const collectionItem = blockValue.collection_name
+          ? context[blockValue.collection_name]
+          : innerMostCollectionItem;
         if (blockValue.type === 'parent-collection-variable') {
-          const collectionItem = blockValue.collection_name
-            ? context[blockValue.collection_name]
-            : innerMostCollectionItem;
           if (!collectionItem) {
             throw new Error(
               `Collection not found: ${blockValue.collection_name || 'default collection'}`
@@ -162,38 +212,42 @@ function resolveBlockValues(context: any, block: any): any {
           }
 
           if (blockValue.variable_type === 'current_item') {
-            clonedBlock[key] = blockValue.path
-              ? resolvePathValue(collectionItem.current_item, blockValue.path)
-              : JSON.stringify(collectionItem.current_item);
+            if (collectionItem.current_item.type === DataVariableType) {
+              const path = collectionItem.current_item.path ? `${collectionItem.current_item.path}.${blockValue.path}` : blockValue.path;
+              clonedBlock[key] = {
+                ...collectionItem.current_item,
+                path
+              };
+            }
           } else {
             clonedBlock[key] = collectionItem[blockValue.variable_type];
           }
+
+          shouldBeOverridden = true;
         } else if (Array.isArray(blockValue)) {
           // Resolve each item in the array
-          clonedBlock[key] = blockValue.map((arrayItem: any) =>
-            typeof arrayItem === 'object' ? resolveBlockValues(context, arrayItem) : arrayItem
-          );
+          clonedBlock[key] = blockValue.map((arrayItem: any) => {
+            const { clonedBlock, overrideKeys: itemOverrideKeys } = resolveBlockValues(context, arrayItem)
+            if (Object.keys(itemOverrideKeys).length > 0) {
+              shouldBeOverridden = true;
+            }
+            return typeof arrayItem === 'object' ? clonedBlock : arrayItem
+          });
         } else {
-          clonedBlock[key] = resolveBlockValues(context, blockValue);
+          const { clonedBlock, overrideKeys: itemOverrideKeys } = resolveBlockValues(context, blockValue).clonedBlock;
+          clonedBlock[key] = clonedBlock;
+
+          if (Object.keys(itemOverrideKeys).length > 0) {
+            shouldBeOverridden = true;
+          }
+        }
+
+        if (shouldBeOverridden && key !== 'components') {
+          overrideKeys[key] = clonedBlock[key]
         }
       }
     }
   }
 
-  return clonedBlock;
-}
-
-function resolvePathValue(object: any, path: string): any {
-  const pathSegments = path.split('.');
-  let resolvedValue = object;
-
-  for (const segment of pathSegments) {
-    if (resolvedValue && typeof resolvedValue === 'object' && segment in resolvedValue) {
-      resolvedValue = resolvedValue[segment];
-    } else {
-      return undefined; // Return undefined if the path doesn't exist
-    }
-  }
-
-  return resolvedValue;
+  return { clonedBlock, overrideKeys };
 }
