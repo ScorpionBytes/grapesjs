@@ -19,7 +19,7 @@ export class ComponentDynamicValueListener {
 
   private createPropertyUpdater() {
     return (key: string, value: any) => {
-      this.component.set(key, value, { skipWatcherUpdates: false });
+      this.component.set(key, value, { skipWatcherUpdates: false, avoidStore: true });
     };
   }
 
