@@ -25,7 +25,7 @@ export class ComponentDynamicValueListener {
 
   private createAttributeUpdater() {
     return (key: string, value: any) => {
-      this.component.setAttributes({ [key]: value }, { skipWatcherUpdates: false });
+      this.component.addAttributes({ [key]: value }, { skipWatcherUpdates: false });
     };
   }
 
