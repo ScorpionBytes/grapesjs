@@ -70,18 +70,23 @@ describe('Component Dynamic Properties', () => {
     };
     dsm.add(dataSource);
 
+    const dataVariable = {
+      type: DataVariableType,
+      path: 'ds_id.id1.value',
+      defaultValue: 'default',
+    };
     const cmp = cmpRoot.append({
       tagName: 'div',
-      content: {
-        type: DataVariableType,
-        path: 'ds_id.id1.value',
-        defaultValue: 'default',
-      },
+      content: dataVariable,
     })[0];
 
     cmp.set('content', 'static-value');
     dsm.get('ds_id').getRecord('id1')?.set('value', 'new-dynamic-value');
     expect(cmp.get('content')).toBe('static-value');
+
+    // @ts-ignore
+    cmp.set({ content: dataVariable });
+    expect(cmp.get('content')).toBe('new-dynamic-value');
   });
 
   test('updating to a new dynamic value listens to the new dynamic value only', () => {
