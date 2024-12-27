@@ -22,6 +22,13 @@ export enum EditorEvents {
   redo = 'redo',
 
   /**
+   * @event `load` Editor is loaded. At this stage, the project is loaded in the editor and elements in the canvas are rendered.
+   * @example
+   * editor.on('load', () => { ... });
+   */
+  load = 'load',
+
+  /**
    * @event `project:load` Project JSON loaded in the editor. The event is triggered on the initial load and on the `editor.loadProjectData` method.
    * @example
    * editor.on('project:load', ({ project, initial }) => { ... });
@@ -34,6 +41,13 @@ export enum EditorEvents {
    * editor.on('log', (msg, opts) => { ... });
    */
   log = 'log',
+
+  /**
+   * @event `telemetry:init` Initial telemetry data are sent.
+   * @example
+   * editor.on('telemetry:init', () => { ... });
+   */
+  telemetryInit = 'telemetry:init',
 
   /**
    * @event `destroy` Editor started destroy (on `editor.destroy()`).
