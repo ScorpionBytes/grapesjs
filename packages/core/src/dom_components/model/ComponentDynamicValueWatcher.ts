@@ -17,39 +17,38 @@ export class ComponentDynamicValueWatcher {
 
   private createPropertyUpdater() {
     return (key: string, value: any) => {
-      this.component.set(key, value, { skipWatcherUpdates: true, avoidStore: true });
+      this.component.set(key, value, { fromDataSource: true, avoidStore: true });
     };
   }
 
   private createAttributeUpdater() {
     return (key: string, value: any) => {
-      this.component.addAttributes({ [key]: value }, { skipWatcherUpdates: true, avoidStore: true });
+      this.component.addAttributes({ [key]: value }, { fromDataSource: true, avoidStore: true });
     };
-  }
-
-  watchComponentDef(values: ObjectAny) {
-    this.addProps(values);
-    this.addAttributes(values.attributes);
   }
 
   addProps(props: ObjectAny) {
     this.propertyWatcher.addDynamicValues(props);
   }
 
-  getDynamicPropsDefs() {
-    return this.propertyWatcher.getAllSerializableValues();
+  addAttributes(attributes: ObjectAny) {
+    this.attributeWatcher.addDynamicValues(attributes);
   }
 
   setAttributes(attributes: ObjectAny) {
     this.attributeWatcher.setDynamicValues(attributes);
   }
 
-  addAttributes(attributes: ObjectAny) {
-    this.attributeWatcher.addDynamicValues(attributes);
-  }
-
   removeAttributes(attributes: string[]) {
     this.attributeWatcher.removeListeners(attributes);
+  }
+
+  getDynamicPropsDefs() {
+    return this.propertyWatcher.getAllSerializableValues();
+  }
+
+  getDynamicAttributesDefs() {
+    return this.attributeWatcher.getAllSerializableValues();
   }
 
   getAttributesDefsOrValues(attributes: ObjectAny) {

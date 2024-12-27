@@ -46,7 +46,6 @@ export class DynamicValueWatcher {
     const propsKeys = Object.keys(dynamicProps);
     for (let index = 0; index < propsKeys.length; index++) {
       const key = propsKeys[index];
-
       this.dynamicVariableListeners[key] = new DynamicVariableListenerManager({
         em: this.em,
         dataVariable: dynamicProps[key],

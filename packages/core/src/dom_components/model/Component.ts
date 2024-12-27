@@ -55,13 +55,13 @@ import { ComponentDynamicValueWatcher } from './ComponentDynamicValueWatcher';
 import { DynamicValueWatcher } from './DynamicValueWatcher';
 import { DynamicValueDefinition } from '../../data_sources/types';
 
-export interface IComponent extends ExtractMethods<Component> {}
+export interface IComponent extends ExtractMethods<Component> { }
 export interface DynamicWatchersOptions {
   skipWatcherUpdates?: boolean;
   fromDataSource?: boolean;
 }
-export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DynamicWatchersOptions {}
-export interface ComponentSetOptions extends SetOptions, DynamicWatchersOptions {}
+export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DynamicWatchersOptions { }
+export interface ComponentSetOptions extends SetOptions, DynamicWatchersOptions { }
 
 const escapeRegExp = (str: string) => {
   return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
@@ -227,12 +227,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
     return this.frame?.getPage();
   }
 
-  preInit() {}
+  preInit() { }
 
   /**
    * Hook method, called once the model is created
    */
-  init() {}
+  init() { }
 
   /**
    * Hook method, called when the model has been updated (eg. updated some model's property)
@@ -240,12 +240,12 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * @param {*} value Property value, if triggered after some property update
    * @param {*} previous Property previous value, if triggered after some property update
    */
-  updated(property: string, value: any, previous: any) {}
+  updated(property: string, value: any, previous: any) { }
 
   /**
    * Hook method, called once the model has been removed
    */
-  removed() {}
+  removed() { }
 
   em!: EditorModel;
   opt!: ComponentOptions;
@@ -267,7 +267,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
     super(props, opt);
     this.componentDVListener = new ComponentDynamicValueWatcher(this, opt.em);
-    this.componentDVListener.watchComponentDef(props);
+    this.componentDVListener.addProps(props);
 
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
     const em = opt.em;
@@ -706,9 +706,11 @@ export default class Component extends StyleableModel<ComponentProperties> {
    * component.addAttributes({ 'data-key': 'value' });
    */
   addAttributes(attrs: ObjectAny, opts: SetAttrOptions = {}) {
+    const dynamicAttributes = this.componentDVListener.getDynamicAttributesDefs();
     return this.setAttributes(
       {
         ...this.getAttributes({ noClass: true }),
+        ...dynamicAttributes,
         ...attrs,
       },
       opts,
