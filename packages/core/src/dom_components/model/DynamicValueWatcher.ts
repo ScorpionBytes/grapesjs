@@ -6,6 +6,11 @@ import { DynamicValue } from '../../data_sources/types';
 import EditorModel from '../../editor/model/Editor';
 import Component from './Component';
 
+export interface DynamicWatchersOptions {
+  skipWatcherUpdates?: boolean;
+  fromDataSource?: boolean;
+}
+
 export class DynamicValueWatcher {
   private dynamicVariableListeners: { [key: string]: DynamicVariableListenerManager } = {};
   constructor(
@@ -33,27 +38,34 @@ export class DynamicValueWatcher {
     return evaluatedValues;
   }
 
-  areStaticValues(values: ObjectAny | undefined) {
-    if (!values) return true;
-    return Object.keys(values).every((key) => {
-      return !isDynamicValueDefinition(values[key]);
-    });
-  }
-
   bindComponent(component: Component) {
     this.component = component;
   }
 
-  setDynamicValues(values: ObjectAny | undefined) {
-    this.removeListeners();
-    return this.addDynamicValues(values);
+  setDynamicValues(values: ObjectAny | undefined, options: DynamicWatchersOptions = {}) {
+    const shouldSkipWatcherUpdates = options.skipWatcherUpdates || options.fromDataSource;
+    if (!shouldSkipWatcherUpdates) {
+      this.removeListeners();
+    }
+
+    return this.addDynamicValues(values, options);
   }
 
-  addDynamicValues(values: ObjectAny | undefined) {
-    const em = this.options.em;
+  addDynamicValues(values: ObjectAny | undefined, options: DynamicWatchersOptions = {}) {
     if (!values) return {};
-    this.removeListeners(Object.keys(values));
-    const dynamicProps = this.getDynamicValues(values);
+    const { evaluatedValues, dynamicValues } = this.getDynamicValues(values);
+
+    const shouldSkipWatcherUpdates = options.skipWatcherUpdates || options.fromDataSource;
+    if (!shouldSkipWatcherUpdates) {
+      this.updateListeners(dynamicValues);
+    }
+
+    return evaluatedValues;
+  }
+
+  private updateListeners(dynamicProps: { [key: string]: DynamicValue }) {
+    const em = this.options.em;
+    this.removeListeners(Object.keys(dynamicProps));
     const propsKeys = Object.keys(dynamicProps);
     for (let index = 0; index < propsKeys.length; index++) {
       const key = propsKeys[index];
@@ -65,25 +77,27 @@ export class DynamicValueWatcher {
         },
       });
     }
-
-    return dynamicProps;
   }
 
   private getDynamicValues(values: ObjectAny) {
     const dynamicValues: {
       [key: string]: DynamicValue;
     } = {};
+    const evaluatedValues: {
+      [key: string]: DynamicValue;
+    } = { ...values };
     const propsKeys = Object.keys(values);
     for (let index = 0; index < propsKeys.length; index++) {
       const key = propsKeys[index];
       if (!isDynamicValueDefinition(values[key])) {
         continue;
       }
-      const { variable } = evaluateDynamicValueDefinition(values[key], this.options);
+      const { value, variable } = evaluateDynamicValueDefinition(values[key], this.options);
+      evaluatedValues[key] = value;
       dynamicValues[key] = variable;
     }
 
-    return dynamicValues;
+    return { evaluatedValues, dynamicValues };
   }
 
   /**

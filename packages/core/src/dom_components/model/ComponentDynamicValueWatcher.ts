@@ -2,6 +2,7 @@ import { ObjectAny } from '../../common';
 import { CollectionsStateMap } from '../../data_sources/model/collection_component/types';
 import EditorModel from '../../editor/model/Editor';
 import Component from './Component';
+import { DynamicWatchersOptions } from './DynamicValueWatcher';
 import { DynamicValueWatcher } from './DynamicValueWatcher';
 
 export class ComponentDynamicValueWatcher {
@@ -10,7 +11,7 @@ export class ComponentDynamicValueWatcher {
 
   constructor(
     component: Component | undefined,
-    private options: {
+    options: {
       em: EditorModel;
       collectionsStateMap: CollectionsStateMap;
     },
@@ -37,24 +38,16 @@ export class ComponentDynamicValueWatcher {
     this.attributeWatcher.bindComponent(component);
   }
 
-  getStaticValues(values: ObjectAny | undefined): ObjectAny {
-    return this.attributeWatcher.getStaticValues(values);
+  addProps(props: ObjectAny, options?: DynamicWatchersOptions) {
+    return this.propertyWatcher.addDynamicValues(props, options);
   }
 
-  areStaticValues(values: ObjectAny | undefined) {
-    return this.attributeWatcher.areStaticValues(values);
+  addAttributes(attributes: ObjectAny, options?: DynamicWatchersOptions) {
+    return this.attributeWatcher.addDynamicValues(attributes, options);
   }
 
-  addProps(props: ObjectAny) {
-    this.propertyWatcher.addDynamicValues(props);
-  }
-
-  addAttributes(attributes: ObjectAny) {
-    this.attributeWatcher.addDynamicValues(attributes);
-  }
-
-  setAttributes(attributes: ObjectAny) {
-    this.attributeWatcher.setDynamicValues(attributes);
+  setAttributes(attributes: ObjectAny, options?: DynamicWatchersOptions) {
+    return this.attributeWatcher.setDynamicValues(attributes, options);
   }
 
   removeAttributes(attributes: string[]) {

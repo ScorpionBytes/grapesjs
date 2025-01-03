@@ -53,14 +53,9 @@ import {
   updateSymbolProps,
 } from './SymbolUtils';
 import { ComponentDynamicValueWatcher } from './ComponentDynamicValueWatcher';
-import { DynamicValueWatcher } from './DynamicValueWatcher';
-import { CollectionVariableType } from '../../data_sources/model/collection_component/constants';
+import { DynamicWatchersOptions } from './DynamicValueWatcher';
 
 export interface IComponent extends ExtractMethods<Component> {}
-export interface DynamicWatchersOptions {
-  skipWatcherUpdates?: boolean;
-  fromDataSource?: boolean;
-}
 export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DynamicWatchersOptions {}
 export interface ComponentSetOptions extends SetOptions, DynamicWatchersOptions {}
 
@@ -373,12 +368,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
 
     // @ts-ignore
     const componentDVListener = this.componentDVListener || options.componentDVListener;
-    const evaluatedAttributes = componentDVListener.getStaticValues(attributes);
-
-    const shouldSkipWatcherUpdates = options.skipWatcherUpdates || options.fromDataSource;
-    if (!shouldSkipWatcherUpdates) {
-      componentDVListener?.addProps(attributes);
-    }
+    const evaluatedAttributes = componentDVListener.addProps(attributes, options);
 
     return super.set(evaluatedAttributes, options);
   }
@@ -703,11 +693,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   setAttributes(attrs: ObjectAny, opts: SetAttrOptions = { skipWatcherUpdates: false, fromDataSource: false }) {
     // @ts-ignore
     const componentDVListener = this.componentDVListener || opts.componentDVListener;
-    const evaluatedAttributes = componentDVListener.getStaticValues(attrs);
-    const shouldSkipWatcherUpdates = opts.skipWatcherUpdates || opts.fromDataSource;
-    if (!shouldSkipWatcherUpdates) {
-      componentDVListener.setAttributes(attrs);
-    }
+    const evaluatedAttributes = componentDVListener.setAttributes(attrs, opts);
     this.set('attributes', { ...evaluatedAttributes }, opts);
 
     return this;
