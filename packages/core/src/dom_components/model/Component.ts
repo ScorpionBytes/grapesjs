@@ -278,6 +278,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
       // @ts-ignore
       componentDVListener,
     });
+    componentDVListener.bindComponent(this);
     this.componentDVListener = componentDVListener;
 
     bindAll(this, '__upSymbProps', '__upSymbCls', '__upSymbComps');
