@@ -20,9 +20,6 @@ export default class CollectionVariable extends Model<CollectionVariableDefiniti
     super(attrs, options);
     this.em = options.em;
     this.collectionsStateMap = options.collectionsStateMap;
-    if (!this.collectionsStateMap) {
-      throw new Error('collectionsStateMap is required');
-    }
 
     this.updateDataVariable();
   }
@@ -40,6 +37,7 @@ export default class CollectionVariable extends Model<CollectionVariableDefiniti
     const resolvedValue = resolveCollectionVariable(
       this.attributes as CollectionVariableDefinition,
       this.collectionsStateMap,
+      this.em,
     );
 
     let dataVariable;
@@ -59,14 +57,17 @@ export default class CollectionVariable extends Model<CollectionVariableDefiniti
 function resolveCollectionVariable(
   collectionVariableDefinition: CollectionVariableDefinition,
   collectionsStateMap: CollectionsStateMap,
+  em: EditorModel,
 ) {
   const { collection_name = keyInnerCollectionState, variable_type, path } = collectionVariableDefinition;
   const collectionItem = collectionsStateMap[collection_name];
   if (!collectionItem) {
-    throw new Error(`Collection not found: ${collection_name}`);
+    em.logError(`Collection not found: ${collection_name}`);
+    return '';
   }
   if (!variable_type) {
-    throw new Error(`Missing collection variable type for collection: ${collection_name}`);
+    em.logError(`Missing collection variable type for collection: ${collection_name}`);
+    return '';
   }
 
   if (variable_type === 'current_item') {
@@ -80,7 +81,8 @@ function resolveCollectionVariable(
       };
     } else if (!!path) {
       if (!collectionItem.current_item?.[path]) {
-        throw new Error(`Path not found in current item: ${path} for collection: ${collection_name}`);
+        em.logError(`Path not found in current item: ${path} for collection: ${collection_name}`);
+        return '';
       }
 
       return collectionItem.current_item[path];

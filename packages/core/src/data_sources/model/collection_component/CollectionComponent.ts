@@ -83,11 +83,13 @@ function getCollectionItems(
 ) {
   const { collection_name, block, config } = collectionDefinition;
   if (!block) {
-    throw new Error('The "block" property is required in the collection definition.');
+    em.logError('The "block" property is required in the collection definition.');
+    return [];
   }
 
   if (!config?.dataSource) {
-    throw new Error('The "config.dataSource" property is required in the collection definition.');
+    em.logError('The "config.dataSource" property is required in the collection definition.');
+    return [];
   }
 
   const components: ComponentDefinition[] = [];
