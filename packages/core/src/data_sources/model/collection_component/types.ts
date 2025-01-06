@@ -11,14 +11,24 @@ type CollectionConfig = {
   dataSource: CollectionDataSource;
 };
 
+export enum CollectionStateVariableType {
+  current_index = 'current_index',
+  start_index = 'start_index',
+  current_item = 'current_item',
+  end_index = 'end_index',
+  collection_name = 'collection_name',
+  total_items = 'total_items',
+  remaining_items = 'remaining_items',
+}
+
 export type CollectionState = {
-  current_index: number;
-  start_index: number;
-  current_item: any;
-  end_index: number;
-  collection_name?: string;
-  total_items: number;
-  remaining_items: number;
+  [CollectionStateVariableType.current_index]: number;
+  [CollectionStateVariableType.start_index]: number;
+  [CollectionStateVariableType.current_item]: any;
+  [CollectionStateVariableType.end_index]: number;
+  [CollectionStateVariableType.collection_name]?: string;
+  [CollectionStateVariableType.total_items]: number;
+  [CollectionStateVariableType.remaining_items]: number;
 };
 
 export type CollectionsStateMap = {
