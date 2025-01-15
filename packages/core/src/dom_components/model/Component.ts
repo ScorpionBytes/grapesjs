@@ -1,4 +1,4 @@
-import { CollectionsStateMap } from '../../data_sources/model/collection_component/types';
+import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import {
   isUndefined,
   isFunction,
@@ -55,7 +55,7 @@ import {
 } from './SymbolUtils';
 import { ComponentDynamicValueWatcher } from './ComponentDynamicValueWatcher';
 import { DynamicWatchersOptions } from './DynamicValueWatcher';
-import { keyIsCollectionItem } from '../../data_sources/model/collection_component/constants';
+import { keyIsCollectionItem } from '../../data_sources/model/data_collection/constants';
 
 export interface IComponent extends ExtractMethods<Component> {}
 export interface SetAttrOptions extends SetOptions, UpdateStyleOptions, DynamicWatchersOptions {}
@@ -349,7 +349,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     }
   }
 
-  getCollectionStateMap(): CollectionsStateMap {
+  getCollectionStateMap(): DataCollectionStateMap {
     const collectionStateMapProp = this.get(keyCollectionsStateMap);
     if (collectionStateMapProp) {
       return collectionStateMapProp;
@@ -2012,7 +2012,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     selector && selector.set({ name: id, label: id });
   }
 
-  private handleCollectionsMapStateChange(m: any, v: CollectionsStateMap, opts = {}) {
+  private handleCollectionsMapStateChange(m: any, v: DataCollectionStateMap, opts = {}) {
     this.componentDVListener.updateCollectionStateMap(v);
     this.components()?.forEach((child) => {
       child.set?.(keyCollectionsStateMap, v);

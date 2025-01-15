@@ -1,11 +1,11 @@
 import { DynamicValueDefinition } from './../../data_sources/types';
-import { CollectionsStateMap } from '../../data_sources/model/collection_component/types';
+import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import { Model, ObjectAny } from '../../common';
 import DynamicVariableListenerManager from '../../data_sources/model/DataVariableListenerManager';
 import { evaluateDynamicValueDefinition, isDynamicValueDefinition } from '../../data_sources/model/utils';
 import EditorModel from '../../editor/model/Editor';
 import Component from './Component';
-import { CollectionVariableType } from '../../data_sources/model/collection_component/constants';
+import { CollectionVariableType } from '../../data_sources/model/data_collection/constants';
 import { ModelDestroyOptions } from 'backbone';
 
 export interface DynamicWatchersOptions {
@@ -18,13 +18,13 @@ type UpdateFn = (component: Component | undefined, key: string, value: any) => v
 export class DynamicValueWatcher extends Model<{ component: Component | undefined; updateFn: UpdateFn }> {
   private dynamicVariableListeners: { [key: string]: DynamicVariableListenerManager } = {};
   private em: EditorModel;
-  private collectionsStateMap?: CollectionsStateMap;
+  private collectionsStateMap?: DataCollectionStateMap;
   constructor(
     private component: Component | undefined,
     private updateFn: UpdateFn,
     options: {
       em: EditorModel;
-      collectionsStateMap?: CollectionsStateMap;
+      collectionsStateMap?: DataCollectionStateMap;
     },
   ) {
     super({ component, updateFn }, options);
@@ -36,7 +36,7 @@ export class DynamicValueWatcher extends Model<{ component: Component | undefine
     this.component = component;
   }
 
-  updateCollectionStateMap(collectionsStateMap: CollectionsStateMap) {
+  updateCollectionStateMap(collectionsStateMap: DataCollectionStateMap) {
     this.collectionsStateMap = collectionsStateMap;
 
     const collectionVariablesKeys = this.getDynamicValuesOfType(CollectionVariableType);

@@ -1,4 +1,4 @@
-import DataVariable, { DataVariableType } from './../DataVariable';
+import DataVariable, { DataVariableType } from '../DataVariable';
 import { isArray } from 'underscore';
 import Component from '../../../dom_components/model/Component';
 import { ComponentOptions } from '../../../dom_components/model/types';
@@ -7,7 +7,12 @@ import DataSource from '../DataSource';
 import { ObjectAny } from '../../../common';
 import EditorModel from '../../../editor/model/Editor';
 import { keyCollectionsStateMap } from '../../../dom_components/model/Component';
-import { CollectionComponentDefinition, CollectionDefinition, CollectionState, CollectionsStateMap } from './types';
+import {
+  ComponentDataCollectionDefinition,
+  DataCollectionDefinition,
+  DataCollectionState,
+  DataCollectionStateMap,
+} from './types';
 import {
   keyCollectionDefinition,
   keyInnerCollectionState,
@@ -16,11 +21,11 @@ import {
 } from './constants';
 import DynamicVariableListenerManager from '../DataVariableListenerManager';
 
-export default class CollectionComponent extends Component {
-  constructor(props: CollectionComponentDefinition, opt: ComponentOptions) {
+export default class ComponentDataCollection extends Component {
+  constructor(props: ComponentDataCollectionDefinition, opt: ComponentOptions) {
     const em = opt.em;
     // @ts-ignore
-    const cmp: CollectionComponent = super(
+    const cmp: ComponentDataCollection = super(
       // @ts-ignore
       {
         ...props,
@@ -37,7 +42,7 @@ export default class CollectionComponent extends Component {
       return cmp;
     }
 
-    const parentCollectionStateMap = (props[keyCollectionsStateMap] || {}) as CollectionsStateMap;
+    const parentCollectionStateMap = (props[keyCollectionsStateMap] || {}) as DataCollectionStateMap;
 
     const components: Component[] = getCollectionItems(em, collectionDefinition, parentCollectionStateMap, opt);
 
@@ -59,7 +64,7 @@ export default class CollectionComponent extends Component {
   }
 
   toJSON(opts?: ObjectAny) {
-    const json = super.toJSON(opts) as CollectionComponentDefinition;
+    const json = super.toJSON(opts) as ComponentDataCollectionDefinition;
 
     const firstChild = this.getBlockDefinition();
     json[keyCollectionDefinition].block = firstChild;
@@ -78,8 +83,8 @@ export default class CollectionComponent extends Component {
 
   private watchDataSource(
     em: EditorModel,
-    collectionDefinition: CollectionDefinition,
-    parentCollectionStateMap: CollectionsStateMap,
+    collectionDefinition: DataCollectionDefinition,
+    parentCollectionStateMap: DataCollectionStateMap,
     opt: ComponentOptions,
   ) {
     const path = this.get(keyCollectionDefinition).config.dataSource?.path;
@@ -103,8 +108,8 @@ export default class CollectionComponent extends Component {
 
 function getCollectionItems(
   em: EditorModel,
-  collectionDefinition: CollectionDefinition,
-  parentCollectionStateMap: CollectionsStateMap,
+  collectionDefinition: DataCollectionDefinition,
+  parentCollectionStateMap: DataCollectionStateMap,
   opt: ComponentOptions,
 ) {
   const { collectionName, block, config } = collectionDefinition;
@@ -128,7 +133,7 @@ function getCollectionItems(
   let blockSymbolMain: Component;
   for (let index = startIndex; index <= endIndex; index++) {
     const item = items[index];
-    const collectionState: CollectionState = {
+    const collectionState: DataCollectionState = {
       collectionName,
       currentIndex: index,
       currentItem: item,
@@ -138,7 +143,7 @@ function getCollectionItems(
       remainingItems: totalItems - (index + 1),
     };
 
-    const collectionsStateMap: CollectionsStateMap = {
+    const collectionsStateMap: DataCollectionStateMap = {
       ...parentCollectionStateMap,
       ...(collectionName && { [collectionName]: collectionState }),
       [keyInnerCollectionState]: collectionState,
@@ -170,7 +175,7 @@ function getCollectionItems(
   return components;
 }
 
-function setCollectionStateMap(collectionsStateMap: CollectionsStateMap) {
+function setCollectionStateMap(collectionsStateMap: DataCollectionStateMap) {
   return (cmp: Component) => {
     cmp.set(keyIsCollectionItem, true);
     cmp.set(keyCollectionsStateMap, collectionsStateMap);

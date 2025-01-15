@@ -1,9 +1,9 @@
 import EditorModel from '../../editor/model/Editor';
 import { DynamicValue, DynamicValueDefinition } from '../types';
-import { CollectionsStateMap } from './collection_component/types';
-import CollectionVariable from './collection_component/CollectionVariable';
-import { CollectionVariableDefinition } from '../../../test/specs/dom_components/model/ComponentTypes';
-import { CollectionVariableType } from './collection_component/constants';
+import { DataCollectionStateMap } from './data_collection/types';
+import CollectionVariable from './data_collection/CollectionVariable';
+import { DataCollectionVariableDefinition } from './data_collection/types';
+import { CollectionVariableType } from './data_collection/constants';
 import { ConditionalVariableType, DataCondition } from './conditional_variables/DataCondition';
 import DataVariable, { DataVariableType } from './DataVariable';
 
@@ -34,7 +34,7 @@ export function getDynamicValueInstance(
   valueDefinition: DynamicValueDefinition,
   options: {
     em: EditorModel;
-    collectionsStateMap?: CollectionsStateMap;
+    collectionsStateMap?: DataCollectionStateMap;
   },
 ): DynamicValue {
   const { em } = options;
@@ -66,7 +66,7 @@ export function evaluateDynamicValueDefinition(
   valueDefinition: DynamicValueDefinition,
   options: {
     em: EditorModel;
-    collectionsStateMap?: CollectionsStateMap;
+    collectionsStateMap?: DataCollectionStateMap;
   },
 ) {
   const dynamicVariable = getDynamicValueInstance(valueDefinition, options);

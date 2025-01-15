@@ -1,6 +1,6 @@
 import { Model, ObjectAny } from '../../common';
-import { CollectionVariableType, keyIsCollectionItem } from '../../data_sources/model/collection_component/constants';
-import { CollectionsStateMap } from '../../data_sources/model/collection_component/types';
+import { CollectionVariableType, keyIsCollectionItem } from '../../data_sources/model/data_collection/constants';
+import { DataCollectionStateMap } from '../../data_sources/model/data_collection/types';
 import EditorModel from '../../editor/model/Editor';
 import Component, { keyCollectionsStateMap } from './Component';
 import { DynamicWatchersOptions } from './DynamicValueWatcher';
@@ -15,7 +15,7 @@ export class ComponentDynamicValueWatcher extends Model<Component> {
     private component: Component | undefined,
     options: {
       em: EditorModel;
-      collectionsStateMap?: CollectionsStateMap;
+      collectionsStateMap?: DataCollectionStateMap;
     },
   ) {
     super(component, options);
@@ -44,7 +44,7 @@ export class ComponentDynamicValueWatcher extends Model<Component> {
     this.updateSymbolOverride();
   }
 
-  updateCollectionStateMap(collectionsStateMap: CollectionsStateMap) {
+  updateCollectionStateMap(collectionsStateMap: DataCollectionStateMap) {
     this.propertyWatcher.updateCollectionStateMap(collectionsStateMap);
     this.attributeWatcher.updateCollectionStateMap(collectionsStateMap);
   }

@@ -1,20 +1,20 @@
-import { CollectionVariableDefinition } from '../../../../test/specs/dom_components/model/ComponentTypes';
+import { DataCollectionVariableDefinition } from './types';
 import { Model } from '../../../common';
 import EditorModel from '../../../editor/model/Editor';
 import DataVariable, { DataVariableType } from '../DataVariable';
 import { keyInnerCollectionState } from './constants';
-import { CollectionState, CollectionsStateMap } from './types';
+import { DataCollectionState, DataCollectionStateMap } from './types';
 
-export default class CollectionVariable extends Model<CollectionVariableDefinition> {
+export default class CollectionVariable extends Model<DataCollectionVariableDefinition> {
   em: EditorModel;
-  collectionsStateMap: CollectionsStateMap;
+  collectionsStateMap: DataCollectionStateMap;
   dataVariable?: DataVariable;
 
   constructor(
-    attrs: CollectionVariableDefinition,
+    attrs: DataCollectionVariableDefinition,
     options: {
       em: EditorModel;
-      collectionsStateMap: CollectionsStateMap;
+      collectionsStateMap: DataCollectionStateMap;
     },
   ) {
     super(attrs, options);
@@ -39,7 +39,7 @@ export default class CollectionVariable extends Model<CollectionVariableDefiniti
 
   private updateDataVariable() {
     const resolvedValue = resolveCollectionVariable(
-      this.attributes as CollectionVariableDefinition,
+      this.attributes as DataCollectionVariableDefinition,
       this.collectionsStateMap,
       this.em,
     );
@@ -59,8 +59,8 @@ export default class CollectionVariable extends Model<CollectionVariableDefiniti
 }
 
 function resolveCollectionVariable(
-  collectionVariableDefinition: CollectionVariableDefinition,
-  collectionsStateMap: CollectionsStateMap,
+  collectionVariableDefinition: DataCollectionVariableDefinition,
+  collectionsStateMap: DataCollectionStateMap,
   em: EditorModel,
 ) {
   const { collectionName = keyInnerCollectionState, variableType, path } = collectionVariableDefinition;
@@ -86,7 +86,7 @@ function resolveCollectionVariable(
 }
 
 function resolveCurrentItem(
-  collectionItem: CollectionState,
+  collectionItem: DataCollectionState,
   path: string | undefined,
   collectionName: string,
   em: EditorModel,

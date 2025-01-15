@@ -1,6 +1,6 @@
 import { ObjectAny } from '../common';
-import CollectionVariable from './model/collection_component/CollectionVariable';
-import { CollectionVariableDefinition } from '../../test/specs/dom_components/model/ComponentTypes';
+import CollectionVariable from './model/data_collection/CollectionVariable';
+import { DataCollectionVariableDefinition } from './model/data_collection/types';
 import ComponentDataVariable from './model/ComponentDataVariable';
 import DataRecord from './model/DataRecord';
 import DataRecords from './model/DataRecords';
@@ -11,7 +11,7 @@ export type DynamicValue = DataVariable | ComponentDataVariable | DataCondition 
 export type DynamicValueDefinition =
   | DataVariableDefinition
   | ConditionalVariableDefinition
-  | CollectionVariableDefinition;
+  | DataCollectionVariableDefinition;
 export interface DataRecordProps extends ObjectAny {
   /**
    * Record id.

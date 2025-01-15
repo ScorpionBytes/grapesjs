@@ -128,9 +128,9 @@ import { DataVariableType } from '../data_sources/model/DataVariable';
 import { ConditionalVariableType } from '../data_sources/model/conditional_variables/DataCondition';
 import ComponentConditionalVariable from '../data_sources/model/conditional_variables/ConditionalComponent';
 import ConditionalComponentView from '../data_sources/view/ComponentDynamicView';
-import CollectionComponent from '../data_sources/model/collection_component/CollectionComponent';
-import CollectionComponentView from '../data_sources/model/collection_component/CollectionComponentView';
-import { CollectionComponentType } from '../data_sources/model/collection_component/constants';
+import ComponentDataCollection from '../data_sources/model/data_collection/ComponentDataCollection';
+import ComponentDataCollectionView from '../data_sources/model/data_collection/ComponentDataCollectionView';
+import { CollectionComponentType } from '../data_sources/model/data_collection/constants';
 
 export type ComponentEvent =
   | 'component:create'
@@ -198,8 +198,8 @@ export default class ComponentManager extends ItemManagerModule<DomComponentsCon
   componentTypes: ComponentStackItem[] = [
     {
       id: CollectionComponentType,
-      model: CollectionComponent,
-      view: CollectionComponentView,
+      model: ComponentDataCollection,
+      view: ComponentDataCollectionView,
     },
     {
       id: ConditionalVariableType,

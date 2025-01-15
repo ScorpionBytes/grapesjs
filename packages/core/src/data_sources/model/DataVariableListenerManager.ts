@@ -6,8 +6,8 @@ import DataVariable, { DataVariableType } from './DataVariable';
 import { DynamicValue } from '../types';
 import { DataCondition, ConditionalVariableType } from './conditional_variables/DataCondition';
 import ComponentDataVariable from './ComponentDataVariable';
-import { CollectionVariableType } from './collection_component/constants';
-import CollectionVariable from './collection_component/CollectionVariable';
+import { CollectionVariableType } from './data_collection/constants';
+import CollectionVariable from './data_collection/CollectionVariable';
 
 export interface DynamicVariableListenerManagerOptions {
   em: EditorModel;

@@ -3,7 +3,7 @@ import Component, { keySymbol, keySymbolOvrd, keySymbols } from './Component';
 import { SymbolToUpOptions } from './types';
 import { isEmptyObj } from '../../utils/mixins';
 import Components from './Components';
-import { CollectionVariableType } from '../../data_sources/model/collection_component/constants';
+import { CollectionVariableType } from '../../data_sources/model/data_collection/constants';
 
 export const isSymbolMain = (cmp: Component) => isArray(cmp.get(keySymbols));
 
