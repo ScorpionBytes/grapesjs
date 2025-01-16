@@ -199,11 +199,12 @@ function getDataSourceItems(dataSource: any, em: EditorModel) {
     case isArray(dataSource):
       items = dataSource;
       break;
-    case typeof dataSource === 'object' && dataSource instanceof DataSource:
+    case typeof dataSource === 'object' && dataSource instanceof DataSource: {
       const id = dataSource.get('id')!;
       items = listDataSourceVariables(id, em);
       break;
-    case typeof dataSource === 'object' && dataSource.type === DataVariableType:
+    }
+    case typeof dataSource === 'object' && dataSource.type === DataVariableType: {
       const isDataSourceId = dataSource.path.split('.').length === 1;
       if (isDataSourceId) {
         const id = dataSource.path;
@@ -213,6 +214,7 @@ function getDataSourceItems(dataSource: any, em: EditorModel) {
         items = em.DataSources.getValue(dataSource.path, []);
       }
       break;
+    }
     default:
   }
   return items;
