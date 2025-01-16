@@ -70,7 +70,9 @@ export default class DataCollectionVariable extends Model<ResolvedDataCollection
       this.dynamicValueListener = new DynamicVariableListenerManager({
         em: this.em,
         dataVariable,
-        updateValueFromDataVariable: this.updateDataVariable,
+        updateValueFromDataVariable: () => {
+          this.set('value', this.dataVariable?.getDataValue());
+        },
       });
     }
 
