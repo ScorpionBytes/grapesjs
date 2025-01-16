@@ -35,8 +35,8 @@ export default class ComponentDataCollection extends Component {
       opt,
     );
 
-    const collectionDefinition = props[keyCollectionDefinition];
-    if (!collectionDefinition) {
+    const collectionDef = props[keyCollectionDefinition];
+    if (!collectionDef) {
       em.logError('missing collection definition');
 
       return cmp;
@@ -44,10 +44,10 @@ export default class ComponentDataCollection extends Component {
 
     const parentCollectionStateMap = (props[keyCollectionsStateMap] || {}) as DataCollectionStateMap;
 
-    const components: Component[] = getCollectionItems(em, collectionDefinition, parentCollectionStateMap, opt);
+    const components: Component[] = getCollectionItems(em, collectionDef, parentCollectionStateMap, opt);
 
     if (this.hasDynamicDataSource()) {
-      this.watchDataSource(em, collectionDefinition, parentCollectionStateMap, opt);
+      this.watchDataSource(em, collectionDef, parentCollectionStateMap, opt);
     }
     cmp.components(components);
 
@@ -59,7 +59,7 @@ export default class ComponentDataCollection extends Component {
   }
 
   hasDynamicDataSource() {
-    const dataSource = this.get(keyCollectionDefinition).config.dataSource;
+    const dataSource = this.get(keyCollectionDefinition).collectionConfig.dataSource;
     return typeof dataSource === 'object' && dataSource.type === DataVariableType;
   }
 
@@ -67,7 +67,7 @@ export default class ComponentDataCollection extends Component {
     const json = super.toJSON(opts) as ComponentDataCollectionDefinition;
 
     const firstChild = this.getBlockDefinition();
-    json[keyCollectionDefinition].block = firstChild;
+    json[keyCollectionDefinition].componentDef = firstChild;
 
     delete json.components;
     delete json.droppable;
@@ -83,11 +83,11 @@ export default class ComponentDataCollection extends Component {
 
   private watchDataSource(
     em: EditorModel,
-    collectionDefinition: DataCollectionDefinition,
+    collectionDef: DataCollectionDefinition,
     parentCollectionStateMap: DataCollectionStateMap,
     opt: ComponentOptions,
   ) {
-    const path = this.get(keyCollectionDefinition).config.dataSource?.path;
+    const path = this.get(keyCollectionDefinition).collectionConfig.dataSource?.path;
     const dataVariable = new DataVariable(
       {
         type: DataVariableType,
@@ -100,7 +100,7 @@ export default class ComponentDataCollection extends Component {
       em: em,
       dataVariable,
       updateValueFromDataVariable: () => {
-        const collectionItems = getCollectionItems(em, collectionDefinition, parentCollectionStateMap, opt);
+        const collectionItems = getCollectionItems(em, collectionDef, parentCollectionStateMap, opt);
         this.components(collectionItems);
       },
     });
@@ -109,33 +109,43 @@ export default class ComponentDataCollection extends Component {
 
 function getCollectionItems(
   em: EditorModel,
-  collectionDefinition: DataCollectionDefinition,
+  collectionDef: DataCollectionDefinition,
   parentCollectionStateMap: DataCollectionStateMap,
   opt: ComponentOptions,
 ) {
-  const { collectionName, block, config } = collectionDefinition;
-  if (!block) {
-    em.logError('The "block" property is required in the collection definition.');
+  const { componentDef, collectionConfig } = collectionDef;
+  if (!collectionConfig) {
+    em.logError('The "collectionConfig" property is required in the collection definition.');
     return [];
   }
 
-  if (!config?.dataSource) {
-    em.logError('The "config.dataSource" property is required in the collection definition.');
+  if (!componentDef) {
+    em.logError('The "componentDef" property is required in the collection definition.');
     return [];
   }
+
+  if (!collectionConfig?.dataSource) {
+    em.logError('The "collectionConfig.dataSource" property is required in the collection definition.');
+    return [];
+  }
+
+  const collectionId = collectionConfig.collectionId;
 
   const components: Component[] = [];
 
-  let items: any[] = getDataSourceItems(config.dataSource, em);
-  const startIndex = Math.max(0, config.startIndex || 0);
-  const endIndex = Math.min(items.length - 1, config.endIndex !== undefined ? config.endIndex : Number.MAX_VALUE);
+  let items: any[] = getDataSourceItems(collectionConfig.dataSource, em);
+  const startIndex = Math.max(0, collectionConfig.startIndex || 0);
+  const endIndex = Math.min(
+    items.length - 1,
+    collectionConfig.endIndex !== undefined ? collectionConfig.endIndex : Number.MAX_VALUE,
+  );
 
   const totalItems = endIndex - startIndex + 1;
   let blockSymbolMain: Component;
   for (let index = startIndex; index <= endIndex; index++) {
     const item = items[index];
     const collectionState: DataCollectionState = {
-      collectionName,
+      collectionId,
       currentIndex: index,
       currentItem: item,
       startIndex: startIndex,
@@ -146,18 +156,18 @@ function getCollectionItems(
 
     const collectionsStateMap: DataCollectionStateMap = {
       ...parentCollectionStateMap,
-      ...(collectionName && { [collectionName]: collectionState }),
+      ...(collectionId && { [collectionId]: collectionState }),
       [keyInnerCollectionState]: collectionState,
     };
 
     if (index === startIndex) {
       // @ts-ignore
-      const type = em.Components.getType(block?.type || 'default');
+      const type = em.Components.getType(componentDef?.type || 'default');
       const model = type.model;
 
       blockSymbolMain = new model(
         {
-          ...block,
+          ...componentDef,
           [keyCollectionsStateMap]: collectionsStateMap,
           [keyIsCollectionItem]: true,
           draggable: false,

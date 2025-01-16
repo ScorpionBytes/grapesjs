@@ -13,7 +13,7 @@ export default class ComponentDataCollectionVariable extends Component {
       // @ts-ignore
       ...super.defaults,
       type: CollectionVariableType,
-      collectionName: undefined,
+      collectionId: undefined,
       variableType: undefined,
       path: undefined,
     };
@@ -22,10 +22,10 @@ export default class ComponentDataCollectionVariable extends Component {
   constructor(props: DataCollectionVariableDefinition & ComponentProperties, opt: ComponentOptions) {
     super(props, opt);
     const em = opt.em;
-    const { type, variableType, path, collectionName } = props;
+    const { type, variableType, path, collectionId } = props;
 
     this.datacollectionVariable = new DataCollectionVariable(
-      { type, variableType, path, collectionName },
+      { type, variableType, path, collectionId },
       {
         em,
         collectionsStateMap: this.get(keyCollectionsStateMap),

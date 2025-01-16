@@ -18,7 +18,7 @@ export default class DataCollectionVariable extends Model<ResolvedDataCollection
   defaults(): Partial<ResolvedDataCollectionVariable> {
     return {
       type: CollectionVariableType,
-      collectionName: undefined,
+      collectionId: undefined,
       variableType: undefined,
       path: undefined,
       value: undefined,
@@ -95,7 +95,7 @@ export default class DataCollectionVariable extends Model<ResolvedDataCollection
   toJSON(options?: any) {
     const json = super.toJSON(options);
     delete json.value;
-    !json.collectionName && delete json.collectionName;
+    !json.collectionId && delete json.collectionId;
 
     return json;
   }
@@ -106,23 +106,23 @@ function resolveCollectionVariable(
   collectionsStateMap: DataCollectionStateMap,
   em: EditorModel,
 ) {
-  const { collectionName = keyInnerCollectionState, variableType, path } = collectionVariableDefinition;
+  const { collectionId = keyInnerCollectionState, variableType, path } = collectionVariableDefinition;
   if (!collectionsStateMap) return;
 
-  const collectionItem = collectionsStateMap[collectionName];
+  const collectionItem = collectionsStateMap[collectionId];
 
   if (!collectionItem) {
-    em.logError(`Collection not found: ${collectionName}`);
+    em.logError(`Collection not found: ${collectionId}`);
     return '';
   }
 
   if (!variableType) {
-    em.logError(`Missing collection variable type for collection: ${collectionName}`);
+    em.logError(`Missing collection variable type for collection: ${collectionId}`);
     return '';
   }
 
   if (variableType === 'currentItem') {
-    return resolveCurrentItem(collectionItem, path, collectionName, em);
+    return resolveCurrentItem(collectionItem, path, collectionId, em);
   }
 
   return collectionItem[variableType];
@@ -131,13 +131,13 @@ function resolveCollectionVariable(
 function resolveCurrentItem(
   collectionItem: DataCollectionState,
   path: string | undefined,
-  collectionName: string,
+  collectionId: string,
   em: EditorModel,
 ) {
   const currentItem = collectionItem.currentItem;
 
   if (!currentItem) {
-    em.logError(`Current item is missing for collection: ${collectionName}`);
+    em.logError(`Current item is missing for collection: ${collectionId}`);
     return '';
   }
 
@@ -150,7 +150,7 @@ function resolveCurrentItem(
   }
 
   if (path && !currentItem[path]) {
-    em.logError(`Path not found in current item: ${path} for collection: ${collectionName}`);
+    em.logError(`Path not found in current item: ${path} for collection: ${collectionId}`);
     return '';
   }
 

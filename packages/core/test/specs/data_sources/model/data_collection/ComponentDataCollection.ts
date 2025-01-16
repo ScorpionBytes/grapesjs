@@ -42,11 +42,11 @@ describe('Collection component', () => {
   test('Collection component should be undroppable', () => {
     const cmp = wrapper.components({
       type: CollectionComponentType,
-      collectionDefinition: {
-        block: {
+      collectionDef: {
+        componentDef: {
           type: 'default',
         },
-        config: {
+        collectionConfig: {
           dataSource: {
             type: DataVariableType,
             path: 'my_data_source_id',
@@ -61,11 +61,11 @@ describe('Collection component', () => {
   test('Collection items should be undraggable', () => {
     const cmp = wrapper.components({
       type: CollectionComponentType,
-      collectionDefinition: {
-        block: {
+      collectionDef: {
+        componentDef: {
           type: 'default',
         },
-        config: {
+        collectionConfig: {
           dataSource: {
             type: DataVariableType,
             path: 'my_data_source_id',
@@ -82,8 +82,8 @@ describe('Collection component', () => {
   test('Collection items should be symbols', () => {
     const cmp = wrapper.components({
       type: CollectionComponentType,
-      collectionDefinition: {
-        block: {
+      collectionDef: {
+        componentDef: {
           type: 'default',
           components: [
             {
@@ -91,7 +91,7 @@ describe('Collection component', () => {
             },
           ],
         },
-        config: {
+        collectionConfig: {
           dataSource: {
             type: DataVariableType,
             path: 'my_data_source_id',
@@ -122,8 +122,8 @@ describe('Collection component', () => {
       beforeEach(() => {
         cmp = wrapper.components({
           type: CollectionComponentType,
-          collectionDefinition: {
-            block: {
+          collectionDef: {
+            componentDef: {
               type: 'default',
               components: [
                 {
@@ -146,7 +146,7 @@ describe('Collection component', () => {
                 path: 'user',
               },
             },
-            config: {
+            collectionConfig: {
               dataSource: {
                 type: DataVariableType,
                 path: 'my_data_source_id',
@@ -277,8 +277,8 @@ describe('Collection component', () => {
       beforeEach(() => {
         cmp = wrapper.components({
           type: CollectionComponentType,
-          collectionDefinition: {
-            block: {
+          collectionDef: {
+            componentDef: {
               type: 'default',
               components: [
                 {
@@ -300,7 +300,7 @@ describe('Collection component', () => {
                 },
               },
             },
-            config: {
+            collectionConfig: {
               dataSource: {
                 type: DataVariableType,
                 path: 'my_data_source_id',
@@ -427,8 +427,8 @@ describe('Collection component', () => {
     test('Traits', () => {
       const cmp = wrapper.components({
         type: CollectionComponentType,
-        collectionDefinition: {
-          block: {
+        collectionDef: {
+          componentDef: {
             type: 'default',
             traits: [
               {
@@ -450,7 +450,7 @@ describe('Collection component', () => {
               },
             ],
           },
-          config: {
+          collectionConfig: {
             dataSource: {
               type: DataVariableType,
               path: 'my_data_source_id',
@@ -524,13 +524,13 @@ describe('Collection component', () => {
 
       const collectionComponentDefinition = {
         type: CollectionComponentType,
-        collectionDefinition: {
-          collectionName: 'my_collection',
-          block: {
+        collectionDef: {
+          componentDef: {
             ...cmpDefinition,
             components: [cmpDefinition, cmpDefinition],
           },
-          config: {
+          collectionConfig: {
+            collectionId: 'my_collection',
             startIndex: 0,
             endIndex: 1,
             dataSource: {
@@ -591,8 +591,8 @@ describe('Collection component', () => {
                 component: {
                   components: [
                     {
-                      collectionDefinition: {
-                        block: {
+                      collectionDef: {
+                        componentDef: {
                           attributes: {
                             attribute_trait: {
                               path: 'user',
@@ -684,8 +684,8 @@ describe('Collection component', () => {
                           },
                           type: 'default',
                         },
-                        collectionName: 'my_collection',
-                        config: {
+                        collectionConfig: {
+                          collectionId: 'my_collection',
                           dataSource: {
                             path: 'my_data_source_id',
                             type: DataVariableType,
@@ -761,8 +761,8 @@ describe('Collection component', () => {
     test('Collection with start and end indexes', () => {
       const cmp = wrapper.components({
         type: CollectionComponentType,
-        collectionDefinition: {
-          block: {
+        collectionDef: {
+          componentDef: {
             type: 'default',
             name: {
               type: CollectionVariableType,
@@ -770,7 +770,7 @@ describe('Collection component', () => {
               path: 'user',
             },
           },
-          config: {
+          collectionConfig: {
             startIndex: 1,
             endIndex: 2,
             dataSource: {
@@ -796,7 +796,7 @@ describe('Collection component', () => {
       { variableType: DataCollectionStateVariableType.startIndex, expectedValues: [0, 0, 0] },
       { variableType: DataCollectionStateVariableType.endIndex, expectedValues: [2, 2, 2] },
       {
-        variableType: DataCollectionStateVariableType.collectionName,
+        variableType: DataCollectionStateVariableType.collectionId,
         expectedValues: ['my_collection', 'my_collection', 'my_collection'],
       },
       { variableType: DataCollectionStateVariableType.totalItems, expectedValues: [3, 3, 3] },
@@ -807,9 +807,8 @@ describe('Collection component', () => {
       test(`Variable type: ${variableType}`, () => {
         const cmp = wrapper.components({
           type: CollectionComponentType,
-          collectionDefinition: {
-            collectionName: 'my_collection',
-            block: {
+          collectionDef: {
+            componentDef: {
               type: 'default',
               name: {
                 type: CollectionVariableType,
@@ -839,7 +838,8 @@ describe('Collection component', () => {
                 },
               ],
             },
-            config: {
+            collectionConfig: {
+              collectionId: 'my_collection',
               dataSource: {
                 type: DataVariableType,
                 path: 'my_data_source_id',

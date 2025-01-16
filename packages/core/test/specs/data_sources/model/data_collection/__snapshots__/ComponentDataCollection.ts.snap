@@ -2,8 +2,17 @@
 
 exports[`Collection component Serialization Saving: Collection with grandchildren 1`] = `
 {
-  "collectionDefinition": {
-    "block": {
+  "collectionDef": {
+    "collectionConfig": {
+      "collectionId": "my_collection",
+      "dataSource": {
+        "path": "my_data_source_id",
+        "type": "data-variable",
+      },
+      "endIndex": 1,
+      "startIndex": 0,
+    },
+    "componentDef": {
       "attributes": {
         "attribute_trait": {
           "path": "user",
@@ -104,15 +113,6 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
         "variableType": "currentItem",
       },
       "type": "default",
-    },
-    "collectionName": "my_collection",
-    "config": {
-      "dataSource": {
-        "path": "my_data_source_id",
-        "type": "data-variable",
-      },
-      "endIndex": 1,
-      "startIndex": 0,
     },
   },
   "type": "collection-component",
@@ -121,8 +121,17 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
 
 exports[`Collection component Serialization Saving: Collection with no grandchildren 1`] = `
 {
-  "collectionDefinition": {
-    "block": {
+  "collectionDef": {
+    "collectionConfig": {
+      "collectionId": "my_collection",
+      "dataSource": {
+        "path": "my_data_source_id",
+        "type": "data-variable",
+      },
+      "endIndex": 1,
+      "startIndex": 0,
+    },
+    "componentDef": {
       "attributes": {
         "attribute_trait": {
           "path": "user",
@@ -214,15 +223,6 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
       },
       "type": "default",
     },
-    "collectionName": "my_collection",
-    "config": {
-      "dataSource": {
-        "path": "my_data_source_id",
-        "type": "data-variable",
-      },
-      "endIndex": 1,
-      "startIndex": 0,
-    },
   },
   "type": "collection-component",
 }
@@ -230,8 +230,17 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
 
 exports[`Collection component Serialization Serializion with Collection Variables to JSON: Collection with grandchildren 1`] = `
 {
-  "collectionDefinition": {
-    "block": {
+  "collectionDef": {
+    "collectionConfig": {
+      "collectionId": "my_collection",
+      "dataSource": {
+        "path": "my_data_source_id",
+        "type": "data-variable",
+      },
+      "endIndex": 1,
+      "startIndex": 0,
+    },
+    "componentDef": {
       "attributes": {
         "attribute_trait": {
           "path": "user",
@@ -333,15 +342,6 @@ exports[`Collection component Serialization Serializion with Collection Variable
       },
       "type": "default",
     },
-    "collectionName": "my_collection",
-    "config": {
-      "dataSource": {
-        "path": "my_data_source_id",
-        "type": "data-variable",
-      },
-      "endIndex": 1,
-      "startIndex": 0,
-    },
   },
   "type": "collection-component",
 }
@@ -349,8 +349,17 @@ exports[`Collection component Serialization Serializion with Collection Variable
 
 exports[`Collection component Serialization Serializion with Collection Variables to JSON: Collection with no grandchildren 1`] = `
 {
-  "collectionDefinition": {
-    "block": {
+  "collectionDef": {
+    "collectionConfig": {
+      "collectionId": "my_collection",
+      "dataSource": {
+        "path": "my_data_source_id",
+        "type": "data-variable",
+      },
+      "endIndex": 1,
+      "startIndex": 0,
+    },
+    "componentDef": {
       "attributes": {
         "attribute_trait": {
           "path": "user",
@@ -441,15 +450,6 @@ exports[`Collection component Serialization Serializion with Collection Variable
         "variableType": "currentItem",
       },
       "type": "default",
-    },
-    "collectionName": "my_collection",
-    "config": {
-      "dataSource": {
-        "path": "my_data_source_id",
-        "type": "data-variable",
-      },
-      "endIndex": 1,
-      "startIndex": 0,
     },
   },
   "type": "collection-component",

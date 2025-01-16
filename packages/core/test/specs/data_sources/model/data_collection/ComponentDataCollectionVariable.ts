@@ -40,8 +40,8 @@ describe('Collection component', () => {
   test('Collection variable components', async () => {
     const cmp = wrapper.components({
       type: CollectionComponentType,
-      collectionDefinition: {
-        block: {
+      collectionDef: {
+        componentDef: {
           type: 'default',
           components: [
             {
@@ -51,7 +51,7 @@ describe('Collection component', () => {
             },
           ],
         },
-        config: {
+        collectionConfig: {
           dataSource: {
             type: DataVariableType,
             path: 'my_data_source_id',
