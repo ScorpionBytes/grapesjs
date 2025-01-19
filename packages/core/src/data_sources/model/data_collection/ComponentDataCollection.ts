@@ -171,7 +171,6 @@ function getCollectionItems(
           [keyCollectionsStateMap]: collectionsStateMap,
           [keyIsCollectionItem]: true,
           draggable: false,
-          deepPropagate: [setCollectionStateMap(collectionsStateMap)],
         },
         opt,
       );
@@ -179,6 +178,7 @@ function getCollectionItems(
     }
     blockSymbolMain!.set(keyCollectionsStateMap, collectionsStateMap);
     const instance = blockSymbolMain!.clone({ symbol: true });
+    setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(instance);
 
     components.push(instance);
   }
@@ -186,10 +186,53 @@ function getCollectionItems(
   return components;
 }
 
+function setCollectionStateMapAndPropagate(
+  collectionsStateMap: DataCollectionStateMap,
+  collectionId: string | undefined,
+) {
+  return (model: Component) => {
+    setCollectionStateMap(collectionsStateMap)(model);
+
+    // Listener function for the 'add' event
+    const addListener = (component: Component) => {
+      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
+    };
+
+    // Generate a unique listener key
+    const listenerKey = `_hasAddListener${collectionId ? `_${collectionId}` : ''}`;
+
+    // Add the 'add' listener if not already in the listeners array
+    if (!model.collectionStateListeners.includes(listenerKey)) {
+      model.listenTo(model.components(), 'add', addListener);
+      model.collectionStateListeners.push(listenerKey);
+
+      // Add a 'remove' listener to clean up
+      model.listenTo(model.components(), 'remove', () => {
+        model.stopListening(model.components(), 'add', addListener); // Remove the 'add' listener
+        const index = model.collectionStateListeners.indexOf(listenerKey);
+        if (index > -1) {
+          model.collectionStateListeners.splice(index, 1); // Remove the listener key
+        }
+      });
+    }
+
+    // Recursively apply to all child components
+    model
+      .components()
+      ?.toArray()
+      .forEach((component: Component) => {
+        setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
+      });
+  };
+}
+
 function setCollectionStateMap(collectionsStateMap: DataCollectionStateMap) {
   return (cmp: Component) => {
     cmp.set(keyIsCollectionItem, true);
-    cmp.set(keyCollectionsStateMap, collectionsStateMap);
+    cmp.set(keyCollectionsStateMap, {
+      ...cmp.get(keyCollectionsStateMap),
+      ...collectionsStateMap,
+    });
   };
 }
 

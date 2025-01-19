@@ -112,7 +112,6 @@ function resolveCollectionVariable(
   const collectionItem = collectionsStateMap[collectionId];
 
   if (!collectionItem) {
-    em.logError(`Collection not found: ${collectionId}`);
     return '';
   }
 

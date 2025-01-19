@@ -266,6 +266,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
   collection!: Components;
   componentDVListener: ComponentDynamicValueWatcher;
   accumulatedPropagatedProps: DeepPropagationArray = [];
+  collectionStateListeners: string[] = [];
 
   constructor(props: ComponentProperties = {}, opt: ComponentOptions) {
     const componentDVListener = new ComponentDynamicValueWatcher(undefined, {
@@ -316,7 +317,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.preInit();
     this.initClasses();
     this.listenTo(this, `change:${keyCollectionsStateMap}`, this.handleCollectionsMapStateChange);
-    this.propagateDeeplyFromParent();
     this.initComponents();
     this.initTraits();
     this.initToolbar();
