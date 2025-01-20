@@ -322,4 +322,5 @@ export interface ComponentOptions {
   frame?: Frame;
   temporary?: boolean;
   avoidChildren?: boolean;
+  forCloning?: boolean;
 }

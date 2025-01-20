@@ -232,6 +232,7 @@ describe('Collection component', () => {
           // @ts-ignore
           type: CollectionVariableType,
           variableType: DataCollectionStateVariableType.currentItem,
+          collectionId: 'my_collection',
           path: 'age',
         });
         expect(firstGrandchild.get('name')).toBe('new_value_12');
@@ -368,6 +369,7 @@ describe('Collection component', () => {
             // @ts-ignore
             type: CollectionVariableType,
             variableType: DataCollectionStateVariableType.currentItem,
+            collectionId: 'my_collection',
             path: 'age',
           },
         });

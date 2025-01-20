@@ -19,6 +19,12 @@ import DynamicVariableListenerManager from '../DataVariableListenerManager';
 
 export default class ComponentDataCollection extends Component {
   constructor(props: ComponentDataCollectionDefinition, opt: ComponentOptions) {
+    const collectionDef = props[keyCollectionDefinition];
+    if (opt.forCloning) {
+      // @ts-ignore
+      return super(props, opt);
+    }
+
     const em = opt.em;
     // @ts-ignore
     const cmp: ComponentDataCollection = super(
@@ -31,7 +37,6 @@ export default class ComponentDataCollection extends Component {
       opt,
     );
 
-    const collectionDef = props[keyCollectionDefinition];
     if (!collectionDef) {
       em.logError('missing collection definition');
 
@@ -41,11 +46,11 @@ export default class ComponentDataCollection extends Component {
     const parentCollectionStateMap = (props[keyCollectionsStateMap] || {}) as DataCollectionStateMap;
 
     const components: Component[] = getCollectionItems(em, collectionDef, parentCollectionStateMap, opt);
+    cmp.components(components);
 
     if (this.hasDynamicDataSource()) {
       this.watchDataSource(em, collectionDef, parentCollectionStateMap, opt);
     }
-    cmp.components(components);
 
     return cmp;
   }
@@ -60,7 +65,7 @@ export default class ComponentDataCollection extends Component {
   }
 
   toJSON(opts?: ObjectAny) {
-    const json = super.toJSON(opts) as ComponentDataCollectionDefinition;
+    const json = super.toJSON.call(this, opts) as ComponentDataCollectionDefinition;
 
     const firstChild = this.getBlockDefinition();
     json[keyCollectionDefinition].componentDef = firstChild;
@@ -166,9 +171,8 @@ function getCollectionItems(
         },
         opt,
       );
-      blockSymbolMain!.setSymbolOverride([keyCollectionsStateMap]);
+      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(blockSymbolMain);
     }
-    blockSymbolMain!.set(keyCollectionsStateMap, collectionsStateMap);
     const instance = blockSymbolMain!.clone({ symbol: true });
     setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(instance);
 
@@ -183,6 +187,7 @@ function setCollectionStateMapAndPropagate(
   collectionId: string | undefined,
 ) {
   return (model: Component) => {
+    // Set the collectionStateMap on the current model
     setCollectionStateMap(collectionsStateMap)(model);
 
     // Listener function for the 'add' event
@@ -199,13 +204,16 @@ function setCollectionStateMapAndPropagate(
       model.collectionStateListeners.push(listenerKey);
 
       // Add a 'remove' listener to clean up
-      model.listenTo(model.components(), 'remove', () => {
+      const removeListener = () => {
         model.stopListening(model.components(), 'add', addListener); // Remove the 'add' listener
+        model.off(`change:${keyCollectionsStateMap}`, handleCollectionStateMapChange); // Remove the change listener
         const index = model.collectionStateListeners.indexOf(listenerKey);
         if (index > -1) {
           model.collectionStateListeners.splice(index, 1); // Remove the listener key
         }
-      });
+      };
+
+      model.listenTo(model.components(), 'remove', removeListener);
     }
 
     // Recursively apply to all child components
@@ -215,7 +223,19 @@ function setCollectionStateMapAndPropagate(
       .forEach((component: Component) => {
         setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
       });
+
+    // Listen for changes in the collectionStateMap and propagate to children
+    model.on(`change:${keyCollectionsStateMap}`, handleCollectionStateMapChange);
   };
+}
+
+function handleCollectionStateMapChange(this: Component) {
+  const updatedCollectionsStateMap = this.get(keyCollectionsStateMap);
+  this.components()
+    ?.toArray()
+    .forEach((component: Component) => {
+      setCollectionStateMap(updatedCollectionsStateMap)(component);
+    });
 }
 
 function logErrorIfMissing(property: any, propertyPath: string, em: EditorModel) {
@@ -250,10 +270,12 @@ function validateCollectionConfig(
 function setCollectionStateMap(collectionsStateMap: DataCollectionStateMap) {
   return (cmp: Component) => {
     cmp.set(keyIsCollectionItem, true);
-    cmp.set(keyCollectionsStateMap, {
+    const updatedCollectionStateMap = {
       ...cmp.get(keyCollectionsStateMap),
       ...collectionsStateMap,
-    });
+    };
+    cmp.set(keyCollectionsStateMap, updatedCollectionStateMap);
+    cmp.componentDVListener.updateCollectionStateMap(updatedCollectionStateMap);
   };
 }
 

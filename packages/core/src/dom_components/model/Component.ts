@@ -311,7 +311,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     this.ccid = Component.createId(this, opt);
     this.preInit();
     this.initClasses();
-    this.listenTo(this, `change:${keyCollectionsStateMap}`, this.handleCollectionsMapStateChange);
     this.initComponents();
     this.initTraits();
     this.initToolbar();
@@ -1358,6 +1357,7 @@ export default class Component extends StyleableModel<ComponentProperties> {
     attr.status = '';
     // @ts-ignore
     opts.collection = null;
+    opts.forCloning = true;
     // @ts-ignore
     const cloned = new this.constructor(attr, opts);
 
@@ -1588,7 +1588,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     let obj = Model.prototype.toJSON.call(this, opts);
     obj = { ...obj, ...this.componentDVListener.getDynamicPropsDefs() };
     obj.attributes = this.componentDVListener.getAttributesDefsOrValues(this.getAttributes());
-    delete obj.componentDVListener;
     delete obj.attributes.class;
     delete obj.toolbar;
     delete obj.traits;
@@ -1975,13 +1974,6 @@ export default class Component extends StyleableModel<ComponentProperties> {
     // Update the style selector name
     const selector = this._getStyleSelector({ id: idPrev });
     selector && selector.set({ name: id, label: id });
-  }
-
-  private handleCollectionsMapStateChange(m: any, v: DataCollectionStateMap, opts = {}) {
-    this.componentDVListener.updateCollectionStateMap(v);
-    this.components()?.forEach((child) => {
-      child.set?.(keyCollectionsStateMap, v);
-    });
   }
 
   static typeExtends = new Set<string>();

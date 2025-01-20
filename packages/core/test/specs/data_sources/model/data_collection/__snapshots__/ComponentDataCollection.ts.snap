@@ -15,11 +15,13 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
     "componentDef": {
       "attributes": {
         "attribute_trait": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
         },
         "name": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
@@ -29,11 +31,13 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
@@ -42,6 +46,7 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
           "components": [
             {
               "name": {
+                "collectionId": "my_collection",
                 "path": "user",
                 "type": "parent-collection-variable",
                 "variableType": "currentIndex",
@@ -50,16 +55,19 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
             },
           ],
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -69,27 +77,32 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
           },
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -98,16 +111,19 @@ exports[`Collection component Serialization Saving: Collection with grandchildre
         },
       ],
       "custom_prop": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentIndex",
       },
       "name": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
       },
       "property_trait": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
@@ -134,11 +150,13 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
     "componentDef": {
       "attributes": {
         "attribute_trait": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
         },
         "name": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
@@ -148,27 +166,32 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
           },
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -178,27 +201,32 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
           },
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -207,16 +235,19 @@ exports[`Collection component Serialization Saving: Collection with no grandchil
         },
       ],
       "custom_prop": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentIndex",
       },
       "name": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
       },
       "property_trait": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
@@ -243,11 +274,13 @@ exports[`Collection component Serialization Serializion with Collection Variable
     "componentDef": {
       "attributes": {
         "attribute_trait": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
         },
         "name": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
@@ -257,11 +290,13 @@ exports[`Collection component Serialization Serializion with Collection Variable
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
@@ -270,6 +305,7 @@ exports[`Collection component Serialization Serializion with Collection Variable
           "components": [
             {
               "name": {
+                "collectionId": "my_collection",
                 "path": "user",
                 "type": "parent-collection-variable",
                 "variableType": "currentIndex",
@@ -278,16 +314,19 @@ exports[`Collection component Serialization Serializion with Collection Variable
             },
           ],
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -297,27 +336,32 @@ exports[`Collection component Serialization Serializion with Collection Variable
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
           },
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -326,16 +370,19 @@ exports[`Collection component Serialization Serializion with Collection Variable
         },
       ],
       "custom_prop": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentIndex",
       },
       "name": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
       },
       "property_trait": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
@@ -362,11 +409,13 @@ exports[`Collection component Serialization Serializion with Collection Variable
     "componentDef": {
       "attributes": {
         "attribute_trait": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
         },
         "name": {
+          "collectionId": "my_collection",
           "path": "user",
           "type": "parent-collection-variable",
           "variableType": "currentItem",
@@ -376,27 +425,32 @@ exports[`Collection component Serialization Serializion with Collection Variable
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
           },
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -406,27 +460,32 @@ exports[`Collection component Serialization Serializion with Collection Variable
         {
           "attributes": {
             "attribute_trait": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
             "name": {
+              "collectionId": "my_collection",
               "path": "user",
               "type": "parent-collection-variable",
               "variableType": "currentItem",
             },
           },
           "custom_prop": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentIndex",
           },
           "name": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
           },
           "property_trait": {
+            "collectionId": "my_collection",
             "path": "user",
             "type": "parent-collection-variable",
             "variableType": "currentItem",
@@ -435,16 +494,19 @@ exports[`Collection component Serialization Serializion with Collection Variable
         },
       ],
       "custom_prop": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentIndex",
       },
       "name": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
       },
       "property_trait": {
+        "collectionId": "my_collection",
         "path": "user",
         "type": "parent-collection-variable",
         "variableType": "currentItem",
