@@ -380,7 +380,6 @@ Component> {
   }
 
   onAdd(model: Component, c?: any, opts: { temporary?: boolean } = {}) {
-    model.propagateDeeplyFromParent();
     const { domc, em } = this;
     const style = model.getStyle();
     const avoidInline = em && em.getConfig().avoidInlineStyle;
