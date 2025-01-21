@@ -208,20 +208,12 @@ export const updateSymbolComps = (symbol: Component, m: Component, c: Components
       changed: 'components:reset',
     });
     const cmps = coll.models;
-    const newSymbols = new Set<Component>();
     logSymbol(symbol, 'reset', toUp, { components: cmps });
 
     toUp.forEach((rel) => {
       const relCmps = rel.components();
       const toReset = cmps.map((cmp, i) => {
-        // This particular case here is to handle reset from `resetFromString`
-        // where we can receive an array of regulat components or already
-        // existing symbols (updated already before reset)
-        if (!isSymbol(cmp) || newSymbols.has(cmp)) {
-          newSymbols.add(cmp);
-          return cmp.clone({ symbol: true });
-        }
-        return relCmps.at(i);
+        return cmp.clone({ symbol: isSymbol(cmp) });
       });
       relCmps.reset(toReset, { fromInstance: symbol, ...c } as any);
     });
