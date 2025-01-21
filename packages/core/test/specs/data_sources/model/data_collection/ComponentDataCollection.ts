@@ -190,6 +190,53 @@ describe('Collection component', () => {
         expect(secondGrandchild.get('name')).toBe('user2');
       });
 
+      test('Removing a record updates the collection component correctly', () => {
+        // Remove a record from the data source
+        dataSource.removeRecord('user1');
+
+        // Verify that the first child component is no longer present
+        expect(cmp.components().length).toBe(2); // Only 2 records remain
+
+        // Verify that the remaining components are updated correctly
+        const updatedFirstChild = cmp.components().at(0);
+        const updatedSecondChild = cmp.components().at(1);
+
+        expect(updatedFirstChild.get('name')).toBe("user2");
+        expect(updatedSecondChild.get('name')).toBe("user3");
+
+        // Verify that the grandchild components are also updated
+        const updatedFirstGrandchild = updatedFirstChild.components().at(0);
+        const updatedSecondGrandchild = updatedSecondChild.components().at(0);
+
+        expect(updatedFirstGrandchild.get('name')).toBe("user2");
+        expect(updatedSecondGrandchild.get('name')).toBe("user3");
+      });
+
+      test('Adding a record updates the collection component correctly', () => {
+        // Add a new record to the data source
+        dataSource.addRecord({ id: 'user4', user: 'user4', age: '20' });
+
+        // Verify that the collection component now has 4 children
+        expect(cmp.components().length).toBe(4);
+
+        // Verify that the new child component is added correctly
+        const newChild = cmp.components().at(3);
+        expect(newChild.get('name')).toBe('user4'); // user4's age
+
+        // Verify that the grandchild component is also added correctly
+        const newGrandchild = newChild.components().at(0);
+        expect(newGrandchild.get('name')).toBe('user4'); // user4's age
+
+        // Verify that existing components are unaffected
+        const firstChild = cmp.components().at(0);
+        const secondChild = cmp.components().at(1);
+        const thirdChild = cmp.components().at(2);
+
+        expect(firstChild.get('name')).toBe('user1');
+        expect(secondChild.get('name')).toBe('user2');
+        expect(thirdChild.get('name')).toBe('user3');
+      });
+
       test('Updating the value to a static value', async () => {
         firstChild.set('name', 'new_content_value');
         expect(firstChild.get('name')).toBe('new_content_value');

@@ -34,16 +34,16 @@ describe('Collection component', () => {
     nestedDataSource = dsm.add({
       id: 'nested_data_source_id',
       records: [
-        { id: 'user1', user: 'nested_user1', age: '12' },
-        { id: 'user2', user: 'nested_user2', age: '14' },
-        { id: 'user3', user: 'nested_user3', age: '16' },
+        { id: 'nested_user1', user: 'nested_user1', age: '12' },
+        { id: 'nested_user2', user: 'nested_user2', age: '14' },
+        { id: 'nested_user3', user: 'nested_user3', age: '16' },
       ],
     });
 
     firstRecord = dataSource.getRecord('user1')!;
     secondRecord = dataSource.getRecord('user2')!;
-    firstNestedRecord = nestedDataSource.getRecord('user1')!;
-    secondNestedRecord = nestedDataSource.getRecord('user2')!;
+    firstNestedRecord = nestedDataSource.getRecord('nested_user1')!;
+    secondNestedRecord = nestedDataSource.getRecord('nested_user2')!;
   });
 
   afterEach(() => {
@@ -310,5 +310,121 @@ describe('Collection component', () => {
     });
 
     expect(firstChild.get('name')).toBe('nested_user1');
+  });
+
+  describe('Nested Collection Component with Parent and Nested Data Sources', () => {
+    let parentCollection: Component;
+    let nestedCollection: Component;
+
+    beforeEach(() => {
+      // Initialize the parent and nested collections
+      parentCollection = wrapper.components({
+        type: CollectionComponentType,
+        collectionDef: {
+          componentDef: {
+            type: CollectionComponentType,
+            name: {
+              type: CollectionVariableType,
+              variableType: DataCollectionStateVariableType.currentItem,
+              collectionId: 'parent_collection',
+              path: 'user',
+            },
+            collectionDef: {
+              componentDef: {
+                type: 'default',
+                name: {
+                  type: CollectionVariableType,
+                  variableType: DataCollectionStateVariableType.currentItem,
+                  collectionId: 'nested_collection',
+                  path: 'user',
+                },
+              },
+              collectionConfig: {
+                collectionId: 'nested_collection',
+                dataSource: {
+                  type: DataVariableType,
+                  path: 'nested_data_source_id',
+                },
+              },
+            },
+          },
+          collectionConfig: {
+            collectionId: 'parent_collection',
+            dataSource: {
+              type: DataVariableType,
+              path: 'my_data_source_id',
+            },
+          },
+        },
+      })[0];
+
+      nestedCollection = parentCollection.components().at(0);
+    });
+
+    test('Removing a record from the parent data source updates the parent collection correctly', () => {
+      // Verify initial state
+      expect(parentCollection.components().length).toBe(2); // 2 parent records initially
+
+      // Remove a record from the parent data source
+      dataSource.removeRecord('user1');
+
+      // Verify that the parent collection updates correctly
+      expect(parentCollection.components().length).toBe(1); // Only 1 parent record remains
+      expect(parentCollection.components().at(0).get('name')).toBe('user2'); // Verify updated name
+
+      // Verify that the nested collection is unaffected
+      expect(nestedCollection.components().length).toBe(3); // Nested records remain the same
+      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify nested name
+    });
+
+    test('Adding a record to the parent data source updates the parent collection correctly', () => {
+      // Verify initial state
+      expect(parentCollection.components().length).toBe(2); // 2 parent records initially
+
+      // Add a new record to the parent data source
+      dataSource.addRecord({ id: 'user3', user: 'user3', age: '16' });
+
+      // Verify that the parent collection updates correctly
+      expect(parentCollection.components().length).toBe(3); // 3 parent records now
+      expect(parentCollection.components().at(2).get('name')).toBe('user3'); // Verify new name
+
+      // Verify that the nested collection is unaffected
+      expect(nestedCollection.components().length).toBe(3); // Nested records remain the same
+      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify nested name
+      expect(parentCollection.components().at(2).components().at(0).get('name')).toBe('nested_user1'); // Verify nested name
+    });
+
+    test('Removing a record from the nested data source updates the nested collection correctly', () => {
+      // Verify initial state
+      expect(nestedCollection.components().length).toBe(3); // 3 nested records initially
+
+      // Remove a record from the nested data source
+      nestedDataSource.removeRecord('nested_user1');
+
+      // Verify that the nested collection updates correctly
+      expect(nestedCollection.components().length).toBe(2); // Only 2 nested records remain
+      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user2'); // Verify updated name
+      expect(nestedCollection.components().at(1).get('name')).toBe('nested_user3'); // Verify updated name
+    });
+
+    test('Adding a record to the nested data source updates the nested collection correctly', () => {
+      // Verify initial state
+      expect(nestedCollection.components().length).toBe(3); // 3 nested records initially
+      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify initial name
+      expect(nestedCollection.components().at(1).get('name')).toBe('nested_user2'); // Verify initial name
+      expect(nestedCollection.components().at(2).get('name')).toBe('nested_user3'); // Verify initial name
+
+      // Add a new record to the nested data source
+      nestedDataSource.addRecord({ id: 'user4', user: 'nested_user4', age: '18' });
+
+      // Verify that the nested collection updates correctly
+      expect(nestedCollection.components().length).toBe(4); // 4 nested records now
+      expect(nestedCollection.components().at(3).get('name')).toBe('nested_user4'); // Verify new name
+
+      // Verify existing records are unaffected
+      expect(nestedCollection.components().at(0).get('name')).toBe('nested_user1'); // Verify existing name
+      expect(nestedCollection.components().at(1).get('name')).toBe('nested_user2'); // Verify existing name
+      expect(nestedCollection.components().at(2).get('name')).toBe('nested_user3'); // Verify existing name
+    });
   });
 });
