@@ -65,9 +65,11 @@ describe('Collection variable components', () => {
 
     const firstGrandchild = cmp.components().at(0).components().at(0);
     expect(firstGrandchild.getInnerHTML()).toContain('user1');
+    expect(firstGrandchild.getEl()?.innerHTML).toContain('user1');
 
     const secondGrandchild = cmp.components().at(1).components().at(0);
     expect(secondGrandchild.getInnerHTML()).toContain('user2');
+    expect(secondGrandchild.getEl()?.innerHTML).toContain('user2');
   });
 
   test('Watches collection variable changes', async () => {
@@ -96,9 +98,11 @@ describe('Collection variable components', () => {
 
     const firstGrandchild = cmp.components().at(0).components().at(0);
     expect(firstGrandchild.getInnerHTML()).toContain('new_correct_value');
+    expect(firstGrandchild.getEl()?.innerHTML).toContain('new_correct_value');
 
     const secondGrandchild = cmp.components().at(1).components().at(0);
     expect(secondGrandchild.getInnerHTML()).toContain('user2');
+    expect(secondGrandchild.getEl()?.innerHTML).toContain('user2');
   });
 
   describe('Serialization', () => {

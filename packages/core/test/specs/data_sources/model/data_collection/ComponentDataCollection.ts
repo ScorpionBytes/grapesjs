@@ -191,20 +191,16 @@ describe('Collection component', () => {
       });
 
       test('Removing a record updates the collection component correctly', () => {
-        // Remove a record from the data source
         dataSource.removeRecord('user1');
 
-        // Verify that the first child component is no longer present
-        expect(cmp.components().length).toBe(2); // Only 2 records remain
+        expect(cmp.components().length).toBe(2);
 
-        // Verify that the remaining components are updated correctly
         const updatedFirstChild = cmp.components().at(0);
         const updatedSecondChild = cmp.components().at(1);
 
         expect(updatedFirstChild.get('name')).toBe('user2');
         expect(updatedSecondChild.get('name')).toBe('user3');
 
-        // Verify that the grandchild components are also updated
         const updatedFirstGrandchild = updatedFirstChild.components().at(0);
         const updatedSecondGrandchild = updatedSecondChild.components().at(0);
 
@@ -213,21 +209,16 @@ describe('Collection component', () => {
       });
 
       test('Adding a record updates the collection component correctly', () => {
-        // Add a new record to the data source
         dataSource.addRecord({ id: 'user4', user: 'user4', age: '20' });
 
-        // Verify that the collection component now has 4 children
         expect(cmp.components().length).toBe(4);
 
-        // Verify that the new child component is added correctly
         const newChild = cmp.components().at(3);
-        expect(newChild.get('name')).toBe('user4'); // user4's age
+        expect(newChild.get('name')).toBe('user4');
 
-        // Verify that the grandchild component is also added correctly
         const newGrandchild = newChild.components().at(0);
-        expect(newGrandchild.get('name')).toBe('user4'); // user4's age
+        expect(newGrandchild.get('name')).toBe('user4');
 
-        // Verify that existing components are unaffected
         const firstChild = cmp.components().at(0);
         const secondChild = cmp.components().at(1);
         const thirdChild = cmp.components().at(2);
@@ -255,7 +246,7 @@ describe('Collection component', () => {
         expect(secondGrandchild.get('name')).toBe('new_content_value');
       });
 
-      test('Updating the value to a diffirent collection variable', async () => {
+      test('Updating the value to a different collection variable', async () => {
         firstChild.set('name', {
           // @ts-ignore
           type: CollectionVariableType,
@@ -292,7 +283,7 @@ describe('Collection component', () => {
         expect(secondGrandchild.get('name')).toBe('most_new_value_14');
       });
 
-      test('Updating the value to a diffirent dynamic variable', async () => {
+      test('Updating the value to a different dynamic variable', async () => {
         firstChild.set('name', {
           // @ts-ignore
           type: DataVariableType,
@@ -377,16 +368,22 @@ describe('Collection component', () => {
 
       test('Evaluating to static value', () => {
         expect(firstChild.getAttributes()['name']).toBe('user1');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('user1');
         expect(firstGrandchild.getAttributes()['name']).toBe('user1');
+        expect(firstGrandchild.getEl()?.getAttribute('name')).toBe('user1');
 
         expect(secondChild.getAttributes()['name']).toBe('user2');
+        expect(secondChild.getEl()?.getAttribute('name')).toBe('user2');
         expect(secondGrandchild.getAttributes()['name']).toBe('user2');
+        expect(secondGrandchild.getEl()?.getAttribute('name')).toBe('user2');
       });
 
       test('Watching Records', async () => {
         firstRecord.set('user', 'new_user1_value');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('new_user1_value');
         expect(firstChild.getAttributes()['name']).toBe('new_user1_value');
         expect(firstGrandchild.getAttributes()['name']).toBe('new_user1_value');
+        expect(firstGrandchild.getEl()?.getAttribute('name')).toBe('new_user1_value');
 
         expect(secondChild.getAttributes()['name']).toBe('user2');
         expect(secondGrandchild.getAttributes()['name']).toBe('user2');
@@ -395,11 +392,15 @@ describe('Collection component', () => {
       test('Updating the value to a static value', async () => {
         firstChild.setAttributes({ name: 'new_content_value' });
         expect(firstChild.getAttributes()['name']).toBe('new_content_value');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('new_content_value');
         expect(secondChild.getAttributes()['name']).toBe('new_content_value');
+        expect(secondChild.getEl()?.getAttribute('name')).toBe('new_content_value');
 
         firstRecord.set('user', 'wrong_value');
         expect(firstChild.getAttributes()['name']).toBe('new_content_value');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('new_content_value');
         expect(secondChild.getAttributes()['name']).toBe('new_content_value');
+        expect(secondChild.getEl()?.getAttribute('name')).toBe('new_content_value');
 
         firstGrandchild.setAttributes({ name: 'new_content_value' });
         expect(firstGrandchild.getAttributes()['name']).toBe('new_content_value');
@@ -421,7 +422,9 @@ describe('Collection component', () => {
           },
         });
         expect(firstChild.getAttributes()['name']).toBe('12');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('12');
         expect(secondChild.getAttributes()['name']).toBe('14');
+        expect(secondChild.getEl()?.getAttribute('name')).toBe('14');
 
         firstRecord.set('age', 'new_value_12');
         secondRecord.set('age', 'new_value_14');
@@ -430,7 +433,9 @@ describe('Collection component', () => {
         secondRecord.set('user', 'wrong_value');
 
         expect(firstChild.getAttributes()['name']).toBe('new_value_12');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('new_value_12');
         expect(secondChild.getAttributes()['name']).toBe('new_value_14');
+        expect(secondChild.getEl()?.getAttribute('name')).toBe('new_value_14');
 
         firstGrandchild.setAttributes({
           name: {
@@ -442,7 +447,9 @@ describe('Collection component', () => {
           },
         });
         expect(firstGrandchild.getAttributes()['name']).toBe('new_value_12');
+        expect(firstGrandchild.getEl()?.getAttribute('name')).toBe('new_value_12');
         expect(secondGrandchild.getAttributes()['name']).toBe('new_value_14');
+        expect(secondGrandchild.getEl()?.getAttribute('name')).toBe('new_value_14');
 
         firstRecord.set('age', 'most_new_value_12');
         secondRecord.set('age', 'most_new_value_14');
@@ -451,7 +458,7 @@ describe('Collection component', () => {
         expect(secondGrandchild.getAttributes()['name']).toBe('most_new_value_14');
       });
 
-      test('Updating the value to a diffirent dynamic variable', async () => {
+      test('Updating the value to a different dynamic variable', async () => {
         firstChild.setAttributes({
           name: {
             // @ts-ignore
@@ -460,12 +467,16 @@ describe('Collection component', () => {
           },
         });
         expect(firstChild.getAttributes()['name']).toBe('user2');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('user2');
         expect(secondChild.getAttributes()['name']).toBe('user2');
+        expect(secondChild.getEl()?.getAttribute('name')).toBe('user2');
         expect(thirdChild.getAttributes()['name']).toBe('user2');
 
         secondRecord.set('user', 'new_value');
         expect(firstChild.getAttributes()['name']).toBe('new_value');
+        expect(firstChild.getEl()?.getAttribute('name')).toBe('new_value');
         expect(secondChild.getAttributes()['name']).toBe('new_value');
+        expect(secondChild.getEl()?.getAttribute('name')).toBe('new_value');
         expect(thirdChild.getAttributes()['name']).toBe('new_value');
 
         firstGrandchild.setAttributes({
@@ -476,12 +487,16 @@ describe('Collection component', () => {
           },
         });
         expect(firstGrandchild.getAttributes()['name']).toBe('new_value');
+        expect(firstGrandchild.getEl()?.getAttribute('name')).toBe('new_value');
         expect(secondGrandchild.getAttributes()['name']).toBe('new_value');
+        expect(secondGrandchild.getEl()?.getAttribute('name')).toBe('new_value');
 
         secondRecord.set('user', 'most_new_value');
 
         expect(firstGrandchild.getAttributes()['name']).toBe('most_new_value');
+        expect(firstGrandchild.getEl()?.getAttribute('name')).toBe('most_new_value');
         expect(secondGrandchild.getAttributes()['name']).toBe('most_new_value');
+        expect(secondGrandchild.getEl()?.getAttribute('name')).toBe('most_new_value');
       });
     });
 
@@ -528,16 +543,20 @@ describe('Collection component', () => {
       const secondChild = cmp.components().at(1);
 
       expect(firstChild.getAttributes()['attribute_trait']).toBe('user1');
+      expect(firstChild.getEl()?.getAttribute('attribute_trait')).toBe('user1');
       expect(firstChild.get('property_trait')).toBe('user1');
 
       expect(secondChild.getAttributes()['attribute_trait']).toBe('user2');
+      expect(secondChild.getEl()?.getAttribute('attribute_trait')).toBe('user2');
       expect(secondChild.get('property_trait')).toBe('user2');
 
       firstRecord.set('user', 'new_user1_value');
       expect(firstChild.getAttributes()['attribute_trait']).toBe('new_user1_value');
+      expect(firstChild.getEl()?.getAttribute('attribute_trait')).toBe('new_user1_value');
       expect(firstChild.get('property_trait')).toBe('new_user1_value');
 
       expect(secondChild.getAttributes()['attribute_trait']).toBe('user2');
+      expect(secondChild.getEl()?.getAttribute('attribute_trait')).toBe('user2');
       expect(secondChild.get('property_trait')).toBe('user2');
     });
   });

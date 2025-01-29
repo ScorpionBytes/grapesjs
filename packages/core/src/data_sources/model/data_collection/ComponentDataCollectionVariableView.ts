@@ -7,7 +7,6 @@ export default class ComponentDataCollectionVariableView extends ComponentView<C
 
   initialize(opt = {}) {
     super.initialize(opt);
-    this.postRender();
 
     this.collectionVariableListener = new DynamicVariableListenerManager({
       em: this.em!,
