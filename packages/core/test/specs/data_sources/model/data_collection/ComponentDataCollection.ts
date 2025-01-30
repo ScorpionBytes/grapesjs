@@ -25,9 +25,9 @@ describe('Collection component', () => {
     dataSource = dsm.add({
       id: 'my_data_source_id',
       records: [
-        { id: 'user1', user: 'user1', age: '12' },
-        { id: 'user2', user: 'user2', age: '14' },
-        { id: 'user3', user: 'user3', age: '16' },
+        { id: 'user1', user: 'user1', firstName: 'Name1', age: '12' },
+        { id: 'user2', user: 'user2', firstName: 'Name2', age: '14' },
+        { id: 'user3', user: 'user3', firstName: 'Name3', age: '16' },
       ],
     });
 
@@ -122,6 +122,20 @@ describe('Collection component', () => {
       let secondGrandchild!: Component;
       let thirdChild!: Component;
 
+      const checkHtmlModelAndView = ({ cmp, innerHTML }: { cmp: Component; innerHTML: string }) => {
+        const tagName = cmp.tagName;
+        expect(cmp.getInnerHTML()).toBe(innerHTML);
+        expect(cmp.toHTML()).toBe(`<${tagName} id="${cmp.getId()}">${innerHTML}</${tagName}>`);
+        expect(cmp.getEl()?.innerHTML).toBe(innerHTML);
+      };
+
+      const checkRecordsWithInnerCmp = () => {
+        dataSource.getRecords().forEach((record, i) => {
+          const innerCmp = cmp.components().at(i).components().at(1);
+          checkHtmlModelAndView({ cmp: innerCmp, innerHTML: record.get('firstName') });
+        });
+      };
+
       beforeEach(() => {
         cmp = wrapper.components({
           type: CollectionComponentType,
@@ -137,6 +151,13 @@ describe('Collection component', () => {
                     collectionId: 'my_collection',
                     path: 'user',
                   },
+                },
+                {
+                  tagName: 'span',
+                  type: CollectionVariableType,
+                  variableType: 'currentItem',
+                  collectionId: 'my_collection',
+                  path: 'firstName',
                 },
               ],
               name: {
@@ -177,6 +198,8 @@ describe('Collection component', () => {
         expect(secondChild.get('name')).toBe('user2');
         expect(secondChild.get('custom_property')).toBe('user2');
         expect(secondGrandchild.get('name')).toBe('user2');
+
+        checkRecordsWithInnerCmp();
       });
 
       test('Watching Records', async () => {
@@ -188,6 +211,10 @@ describe('Collection component', () => {
         expect(secondChild.get('name')).toBe('user2');
         expect(secondChild.get('custom_property')).toBe('user2');
         expect(secondGrandchild.get('name')).toBe('user2');
+
+        const firstName = 'Name1-up';
+        firstRecord.set({ firstName });
+        checkRecordsWithInnerCmp();
       });
 
       test('Removing a record updates the collection component correctly', () => {
@@ -206,10 +233,12 @@ describe('Collection component', () => {
 
         expect(updatedFirstGrandchild.get('name')).toBe('user2');
         expect(updatedSecondGrandchild.get('name')).toBe('user3');
+
+        checkRecordsWithInnerCmp();
       });
 
       test('Adding a record updates the collection component correctly', () => {
-        dataSource.addRecord({ id: 'user4', user: 'user4', age: '20' });
+        dataSource.addRecord({ id: 'user4', user: 'user4', firstName: 'Name4', age: '20' });
 
         expect(cmp.components().length).toBe(4);
 
@@ -226,6 +255,8 @@ describe('Collection component', () => {
         expect(firstChild.get('name')).toBe('user1');
         expect(secondChild.get('name')).toBe('user2');
         expect(thirdChild.get('name')).toBe('user3');
+
+        checkRecordsWithInnerCmp();
       });
 
       test('Updating the value to a static value', async () => {
