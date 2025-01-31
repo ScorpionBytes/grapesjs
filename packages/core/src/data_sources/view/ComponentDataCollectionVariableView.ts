@@ -1,6 +1,6 @@
-import ComponentView from '../../../dom_components/view/ComponentView';
-import DynamicVariableListenerManager from '../DataVariableListenerManager';
-import ComponentDataCollectionVariable from './ComponentDataCollectionVariable';
+import ComponentView from '../../dom_components/view/ComponentView';
+import DynamicVariableListenerManager from '../model/DataVariableListenerManager';
+import ComponentDataCollectionVariable from '../model/data_collection/ComponentDataCollectionVariable';
 
 export default class ComponentDataCollectionVariableView extends ComponentView<ComponentDataCollectionVariable> {
   collectionVariableListener?: DynamicVariableListenerManager;

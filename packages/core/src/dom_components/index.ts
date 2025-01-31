@@ -53,7 +53,7 @@
  *
  * @module Components
  */
-import { debounce, isArray, isBoolean, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
+import { debounce, isArray, isEmpty, isFunction, isString, isSymbol, result } from 'underscore';
 import { ItemManagerModule } from '../abstract/Module';
 import { ObjectAny } from '../common';
 import EditorModel from '../editor/model/Editor';
@@ -129,10 +129,10 @@ import { DataConditionType } from '../data_sources/model/conditional_variables/D
 import ComponentDataCondition from '../data_sources/model/conditional_variables/ComponentDataCondition';
 import ComponentDataConditionView from '../data_sources/view/ComponentDataConditionView';
 import ComponentDataCollection from '../data_sources/model/data_collection/ComponentDataCollection';
-import ComponentDataCollectionView from '../data_sources/model/data_collection/ComponentDataCollectionView';
 import { DataCollectionType, DataCollectionVariableType } from '../data_sources/model/data_collection/constants';
 import ComponentDataCollectionVariable from '../data_sources/model/data_collection/ComponentDataCollectionVariable';
-import ComponentDataCollectionVariableView from '../data_sources/model/data_collection/ComponentDataCollectionVariableView';
+import ComponentDataCollectionVariableView from '../data_sources/view/ComponentDataCollectionVariableView';
+import ComponentDataCollectionView from '../data_sources/view/ComponentDataCollectionView';
 
 export type ComponentEvent =
   | 'component:create'
