@@ -17,6 +17,7 @@ import {
   DataCollectionState,
   DataCollectionStateMap,
 } from './types';
+import { updateFromWatcher } from '../../../dom_components/model/ComponentDataResolverWatchers';
 
 export default class ComponentDataCollection extends Component {
   constructor(props: ComponentDataCollectionProps, opt: ComponentOptions) {
@@ -80,7 +81,7 @@ export default class ComponentDataCollection extends Component {
       onUpdate: () => {
         const collectionDef = { ...this.get(keyCollectionDefinition), componentDef: this.getComponentDef() };
         const collectionItems = getCollectionItems(em, collectionDef, parentCollectionStateMap, opt);
-        this.components().reset(collectionItems);
+        this.components().reset(collectionItems, updateFromWatcher as any);
       },
     });
   }

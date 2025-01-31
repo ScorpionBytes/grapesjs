@@ -13,7 +13,7 @@ import {
 } from './ComponentResolverWatcher';
 import { getSymbolsToUpdate } from './SymbolUtils';
 
-const updateOptions = { fromDataSource: true, avoidStore: true };
+export const updateFromWatcher = { fromDataSource: true, avoidStore: true };
 
 export class ComponentDataResolverWatchers {
   private propertyWatcher: ComponentResolverWatcher;
@@ -28,11 +28,11 @@ export class ComponentDataResolverWatchers {
   }
 
   private onPropertyUpdate(component: Component | undefined, key: string, value: any) {
-    component?.set(key, value, updateOptions);
+    component?.set(key, value, updateFromWatcher);
   }
 
   private onAttributeUpdate(component: Component | undefined, key: string, value: any) {
-    component?.addAttributes({ [key]: value }, updateOptions);
+    component?.addAttributes({ [key]: value }, updateFromWatcher);
   }
 
   bindComponent(component: Component) {
