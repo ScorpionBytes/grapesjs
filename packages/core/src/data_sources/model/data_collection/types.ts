@@ -2,7 +2,7 @@ import { DataCollectionType, DataCollectionVariableType, keyCollectionDefinition
 import { ComponentDefinition, ComponentProperties } from '../../../dom_components/model/types';
 import { DataVariableProps } from '../DataVariable';
 
-export type DataCollectionDataSource = any[] | DataVariableProps | DataCollectionVariableProps;
+export type DataCollectionDataSource = DataVariableProps | DataCollectionVariableProps;
 
 export interface DataCollectionConfig {
   collectionId: string;
@@ -24,7 +24,7 @@ export enum DataCollectionStateVariableType {
 export interface DataCollectionState {
   [DataCollectionStateVariableType.currentIndex]: number;
   [DataCollectionStateVariableType.startIndex]: number;
-  [DataCollectionStateVariableType.currentItem]: any;
+  [DataCollectionStateVariableType.currentItem]: DataVariableProps;
   [DataCollectionStateVariableType.endIndex]: number;
   [DataCollectionStateVariableType.collectionId]: string;
   [DataCollectionStateVariableType.totalItems]: number;

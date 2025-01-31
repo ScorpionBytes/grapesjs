@@ -3,18 +3,20 @@ import { ObjectAny } from '../../../common';
 import Component from '../../../dom_components/model/Component';
 import { ComponentDefinition, ComponentDefinitionDefined, ComponentOptions } from '../../../dom_components/model/types';
 import EditorModel from '../../../editor/model/Editor';
-import { toLowerCase } from '../../../utils/mixins';
+import { isObject, toLowerCase } from '../../../utils/mixins';
 import DataSource from '../DataSource';
-import DataVariable, { DataVariableType } from '../DataVariable';
+import DataVariable, { DataVariableProps, DataVariableType } from '../DataVariable';
 import DynamicVariableListenerManager from '../DataVariableListenerManager';
 import { DataCollectionType, keyCollectionDefinition, keyCollectionsStateMap, keyIsCollectionItem } from './constants';
 import {
   ComponentDataCollectionProps,
   DataCollectionConfig,
+  DataCollectionDataSource,
   DataCollectionProps,
   DataCollectionState,
   DataCollectionStateMap,
 } from './types';
+import { isDataVariable } from '../utils';
 
 export default class ComponentDataCollection extends Component {
   constructor(props: ComponentDataCollectionProps, opt: ComponentOptions) {
@@ -43,22 +45,25 @@ export default class ComponentDataCollection extends Component {
     const parentCollectionStateMap = (props[keyCollectionsStateMap] || {}) as DataCollectionStateMap;
 
     const components: Component[] = getCollectionItems(em, collectionDef, parentCollectionStateMap, opt);
-    cmp.components(components);
+    cmp.components(components, opt);
 
-    if (this.hasDynamicDataSource()) {
-      this.watchDataSource(em, parentCollectionStateMap, opt);
+    if (isDataVariable(this.collectionDataSource)) {
+      this.watchDataSource(parentCollectionStateMap, opt);
     }
 
     return cmp;
   }
 
-  static isComponent(el: HTMLElement) {
-    return toLowerCase(el.tagName) === DataCollectionType;
+  get collectionConfig() {
+    return this.get(keyCollectionDefinition).collectionConfig as DataCollectionConfig;
   }
 
-  hasDynamicDataSource() {
-    const dataSource = this.get(keyCollectionDefinition).collectionConfig.dataSource;
-    return typeof dataSource === 'object' && dataSource.type === DataVariableType;
+  get collectionDataSource() {
+    return this.collectionConfig.dataSource;
+  }
+
+  static isComponent(el: HTMLElement) {
+    return toLowerCase(el.tagName) === DataCollectionType;
   }
 
   toJSON(opts?: ObjectAny) {
@@ -79,18 +84,13 @@ export default class ComponentDataCollection extends Component {
     return firstChildJSON;
   }
 
-  private watchDataSource(em: EditorModel, parentCollectionStateMap: DataCollectionStateMap, opt: ComponentOptions) {
-    const path = this.get(keyCollectionDefinition).collectionConfig.dataSource?.path;
-    const dataVariable = new DataVariable(
-      {
-        type: DataVariableType,
-        path,
-      },
-      { em },
-    );
+  private watchDataSource(parentCollectionStateMap: DataCollectionStateMap, opt: ComponentOptions) {
+    const { em } = this;
+    const path = this.collectionDataSource?.path!;
+    const dataVariable = new DataVariable({ type: DataVariableType, path }, { em });
 
     new DynamicVariableListenerManager({
-      em: em,
+      em,
       dataVariable,
       updateValueFromDataVariable: () => {
         const collectionDef = {
@@ -106,10 +106,8 @@ export default class ComponentDataCollection extends Component {
   }
 
   private deepToJSON(component: Component) {
-    const componentJSON: Partial<ComponentDefinitionDefined> = {
-      ...component.toJSON(),
-      components: component.components().map((cmp) => this.deepToJSON(cmp)),
-    };
+    const componentJSON: Partial<ComponentDefinitionDefined> = JSON.parse(JSON.stringify(component));
+
     const hasNoChildren = component.components().length === 0;
     const isCollectionComponent = component.get(keyCollectionDefinition);
     if (hasNoChildren || isCollectionComponent) {
@@ -132,19 +130,17 @@ function getCollectionItems(
     return [];
   }
 
-  const collectionId = collectionConfig.collectionId;
-
   const components: Component[] = [];
-
-  let items: any[] = getDataSourceItems(collectionConfig.dataSource, em);
+  const collectionId = collectionConfig.collectionId;
+  const items = getDataSourceItems(collectionConfig.dataSource, em);
   const startIndex = Math.max(0, collectionConfig.startIndex || 0);
   const endIndex = Math.min(
     items.length - 1,
     collectionConfig.endIndex !== undefined ? collectionConfig.endIndex : Number.MAX_VALUE,
   );
-
   const totalItems = endIndex - startIndex + 1;
-  let blockSymbolMain: Component;
+  let symbolMain: Component;
+
   for (let index = startIndex; index <= endIndex; index++) {
     const item = items[index];
     const collectionState: DataCollectionState = {
@@ -171,28 +167,13 @@ function getCollectionItems(
 
     if (index === startIndex) {
       const componentType = (componentDef?.type as string) || 'default';
-      let type = em.Components.getType(componentType);
-      // Handle the case where the type is not found
-      if (!type) {
-        em.logWarning(`Component type "${componentType}" not found. Using default type.`);
-        const defaultType = em.Components.getType('default');
-        if (!defaultType) {
-          throw new Error('Default component type not found. Cannot proceed.');
-        }
-        type = defaultType;
-      }
-      const model = type.model;
-
-      blockSymbolMain = new model(
-        {
-          ...deepClone(componentDef),
-          draggable: false,
-        },
-        opt,
-      );
-      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(blockSymbolMain);
+      let type = em.Components.getType(componentType) || em.Components.getType('default');
+      const Model = type.model;
+      symbolMain = new Model({ ...deepClone(componentDef), draggable: false }, opt);
+      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(symbolMain);
     }
-    const instance = blockSymbolMain!.clone({ symbol: true });
+
+    const instance = symbolMain!.clone({ symbol: true });
     setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(instance);
 
     components.push(instance);
@@ -205,46 +186,38 @@ function setCollectionStateMapAndPropagate(
   collectionsStateMap: DataCollectionStateMap,
   collectionId: string | undefined,
 ) {
-  return (model: Component) => {
-    // Set the collectionStateMap on the current model
-    setCollectionStateMap(collectionsStateMap)(model);
+  return (cmp: Component) => {
+    setCollectionStateMap(collectionsStateMap)(cmp);
 
-    // Listener function for the 'add' event
     const addListener = (component: Component) => {
       setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
     };
 
-    // Generate a unique listener key
     const listenerKey = `_hasAddListener${collectionId ? `_${collectionId}` : ''}`;
+    const cmps = cmp.components();
 
     // Add the 'add' listener if not already in the listeners array
-    if (!model.collectionStateListeners.includes(listenerKey)) {
-      model.listenTo(model.components(), 'add', addListener);
-      model.collectionStateListeners.push(listenerKey);
+    if (!cmp.collectionStateListeners.includes(listenerKey)) {
+      cmp.listenTo(cmps, 'add', addListener);
+      cmp.collectionStateListeners.push(listenerKey);
 
-      // Add a 'remove' listener to clean up
       const removeListener = (component: Component) => {
-        component.stopListening(component.components(), 'add', addListener); // Remove the 'add' listener
-        component.off(`change:${keyCollectionsStateMap}`, handleCollectionStateMapChange); // Remove the change listener
+        component.stopListening(component.components(), 'add', addListener);
+        component.off(`change:${keyCollectionsStateMap}`, handleCollectionStateMapChange);
         const index = component.collectionStateListeners.indexOf(listenerKey);
         if (index > -1) {
-          component.collectionStateListeners.splice(index, 1); // Remove the listener key
+          component.collectionStateListeners.splice(index, 1);
         }
       };
 
-      model.listenTo(model.components(), 'remove', removeListener);
+      cmp.listenTo(cmps, 'remove', removeListener);
     }
 
-    // Recursively apply to all child components
-    model
-      .components()
-      ?.toArray()
-      .forEach((component: Component) => {
-        setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
-      });
+    cmps?.toArray().forEach((component: Component) => {
+      setCollectionStateMapAndPropagate(collectionsStateMap, collectionId)(component);
+    });
 
-    // Listen for changes in the collectionStateMap and propagate to children
-    model.on(`change:${keyCollectionsStateMap}`, handleCollectionStateMapChange);
+    cmp.on(`change:${keyCollectionsStateMap}`, handleCollectionStateMapChange);
   };
 }
 
@@ -298,18 +271,19 @@ function setCollectionStateMap(collectionsStateMap: DataCollectionStateMap) {
   };
 }
 
-function getDataSourceItems(dataSource: any, em: EditorModel) {
-  let items: any[] = [];
+function getDataSourceItems(dataSource: DataCollectionDataSource, em: EditorModel) {
+  let items: DataVariableProps[] = [];
+
   switch (true) {
     case isArray(dataSource):
       items = dataSource;
       break;
-    case typeof dataSource === 'object' && dataSource instanceof DataSource: {
+    case isObject(dataSource) && dataSource instanceof DataSource: {
       const id = dataSource.get('id')!;
       items = listDataSourceVariables(id, em);
       break;
     }
-    case typeof dataSource === 'object' && dataSource.type === DataVariableType: {
+    case isDataVariable(dataSource): {
       const isDataSourceId = dataSource.path.split('.').length === 1;
       if (isDataSourceId) {
         const id = dataSource.path;
@@ -322,10 +296,11 @@ function getDataSourceItems(dataSource: any, em: EditorModel) {
     }
     default:
   }
+
   return items;
 }
 
-function listDataSourceVariables(dataSource_id: string, em: EditorModel) {
+function listDataSourceVariables(dataSource_id: string, em: EditorModel): DataVariableProps[] {
   const records = em.DataSources.getValue(dataSource_id, []);
   const keys = Object.keys(records);
 

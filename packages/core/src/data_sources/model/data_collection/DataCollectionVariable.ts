@@ -149,10 +149,10 @@ function resolveCurrentItem(
     };
   }
 
-  if (path && !currentItem[path]) {
+  if (path && !(currentItem as any)[path]) {
     em.logError(`Path not found in current item: ${path} for collection: ${collectionId}`);
     return '';
   }
 
-  return path ? currentItem[path] : currentItem;
+  return path ? (currentItem as any)[path] : currentItem;
 }

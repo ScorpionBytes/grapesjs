@@ -4,7 +4,7 @@ import { DataCollectionStateMap } from './data_collection/types';
 import DataCollectionVariable from './data_collection/DataCollectionVariable';
 import { DataCollectionVariableType } from './data_collection/constants';
 import { DataConditionType, DataCondition } from './conditional_variables/DataCondition';
-import DataVariable, { DataVariableType } from './DataVariable';
+import DataVariable, { DataVariableProps, DataVariableType } from './DataVariable';
 
 export function isDynamicValueDefinition(value: any): value is DynamicValueProps {
   return (
@@ -16,7 +16,7 @@ export function isDynamicValue(value: any): value is DynamicValue {
   return value instanceof DataVariable || value instanceof DataCondition;
 }
 
-export function isDataVariable(variable: any) {
+export function isDataVariable(variable: any): variable is DataVariableProps {
   return variable?.type === DataVariableType;
 }
 
