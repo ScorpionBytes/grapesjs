@@ -6,7 +6,7 @@ import { DataCollectionVariableType, keyCollectionsStateMap } from './constants'
 import { ComponentDataCollectionVariableProps, DataCollectionStateMap } from './types';
 
 export default class ComponentDataCollectionVariable extends Component {
-  datacollectionVariable: DataCollectionVariable;
+  dataResolver: DataCollectionVariable;
 
   get defaults() {
     // @ts-expect-error
@@ -23,13 +23,11 @@ export default class ComponentDataCollectionVariable extends Component {
 
   constructor(props: ComponentDataCollectionVariableProps, opt: ComponentOptions) {
     super(props, opt);
-    const em = opt.em;
     const { type, variableType, path, collectionId } = props;
-
-    this.datacollectionVariable = new DataCollectionVariable(
+    this.dataResolver = new DataCollectionVariable(
       { type, variableType, path, collectionId },
       {
-        em,
+        ...opt,
         collectionsStateMap: this.get(keyCollectionsStateMap),
       },
     );
@@ -38,11 +36,11 @@ export default class ComponentDataCollectionVariable extends Component {
   }
 
   private handleCollectionsMapStateUpdate(m: any, v: DataCollectionStateMap, opts = {}) {
-    this.datacollectionVariable.updateCollectionsStateMap(v);
+    this.dataResolver.updateCollectionsStateMap(v);
   }
 
   getDataValue() {
-    return this.datacollectionVariable.getDataValue();
+    return this.dataResolver.getDataValue();
   }
 
   getInnerHTML() {

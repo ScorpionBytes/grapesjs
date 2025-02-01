@@ -9,7 +9,7 @@ export default class ComponentDataCollectionVariableView extends ComponentView<C
     super.initialize(opt);
     this.dataResolverListener = new DataResolverListener({
       em: this.em!,
-      resolver: this.model.datacollectionVariable,
+      resolver: this.model.dataResolver,
       onUpdate: this.postRender.bind(this),
     });
   }
