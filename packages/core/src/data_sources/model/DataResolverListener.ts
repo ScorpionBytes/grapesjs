@@ -69,7 +69,7 @@ export default class DataResolverListener {
     const dataListeners: DataSourceListener[] = [];
     const { path } = dataVariable.attributes;
     const normPath = stringToPath(path || '').join('.');
-    const [ds, dr] = em.DataSources.fromPath(path);
+    const [ds, dr] = em.DataSources.fromPath(path!);
     ds && dataListeners.push({ obj: ds.records, event: 'add remove reset' });
     dr && dataListeners.push({ obj: dr, event: 'change' });
     dataListeners.push(

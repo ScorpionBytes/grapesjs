@@ -4,7 +4,7 @@ import { toLowerCase } from '../../../utils/mixins';
 import { DataCondition, DataConditionProps, DataConditionType } from './DataCondition';
 
 export default class ComponentDataCondition extends Component {
-  dataCondition: DataCondition;
+  dataResolver: DataCondition;
 
   constructor(props: DataConditionProps, opt: ComponentOptions) {
     const { condition, ifTrue, ifFalse } = props;
@@ -17,13 +17,13 @@ export default class ComponentDataCondition extends Component {
       },
       opt,
     );
-    this.dataCondition = dataConditionInstance;
-    this.dataCondition.onValueChange = this.handleConditionChange.bind(this);
+    this.dataResolver = dataConditionInstance;
+    this.dataResolver.onValueChange = this.handleConditionChange.bind(this);
   }
 
   private handleConditionChange() {
-    this.dataCondition.reevaluate();
-    this.components(this.dataCondition.getDataValue());
+    this.dataResolver.reevaluate();
+    this.components(this.dataResolver.getDataValue());
   }
 
   static isComponent(el: HTMLElement) {
@@ -31,6 +31,6 @@ export default class ComponentDataCondition extends Component {
   }
 
   toJSON(): ComponentDefinition {
-    return this.dataCondition.toJSON();
+    return this.dataResolver.toJSON();
   }
 }
