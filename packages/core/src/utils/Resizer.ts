@@ -672,21 +672,17 @@ export default class Resizer {
     const maxDim = opts.maxDim;
     const deltaX = data.delta!.x;
     const deltaY = data.delta!.y;
-    const parentEl = this.getParentEl();
-    const parentRect = parentEl ? this.getElementPos(parentEl) : { top: 0, left: 0, width: 0, height: 0 };
     const parentW = this.parentDim!.w;
     const parentH = this.parentDim!.h;
     const unitWidth = this.opts.unitWidth;
     const unitHeight = this.opts.unitHeight;
+    const parentRect = this.getParentRect();
     const startW = unitWidth === '%' ? (startDim.w / 100) * parentW : startDim.w;
     const startH = unitHeight === '%' ? (startDim.h / 100) * parentH : startDim.h;
 
-    // Check if the parent or any ancestor has `position: relative`, `absolute`, `fixed`, or `sticky`
-    const hasPositionedParent = parentEl && this.hasPositionedParent(parentEl);
-
     const box: RectDim = {
-      t: hasPositionedParent ? startDim.t - parentRect.top : startDim.t, // Subtract only if parent or ancestor is positioned
-      l: hasPositionedParent ? startDim.l - parentRect.left : startDim.l, // Subtract only if parent or ancestor is positioned
+      t: startDim.t - parentRect.top,
+      l: startDim.l - parentRect.left,
       w: startW,
       h: startH,
     };
@@ -757,10 +753,19 @@ export default class Resizer {
     return box;
   }
 
-  hasPositionedParent(element: HTMLElement | null): boolean {
-    if (!element) return false;
+  getParentRect(): BoundingRect {
+    let parentRect = { left: 0, top: 0, width: 0, height: 0 };
+    const { el } = this;
 
-    // If the element's offsetParent is not the body or null, it has a positioned ancestor
-    return element.offsetParent !== document.body && element.offsetParent !== null;
+    if (!el) return parentRect;
+
+    const { offsetParent } = el;
+
+    // Check if the parent or any ancestor has `position: relative`, `absolute`, `fixed`, or `sticky`
+    if (offsetParent && offsetParent.tagName !== 'BODY') {
+      parentRect = this.getElementPos(offsetParent as HTMLElement);
+    }
+
+    return parentRect;
   }
 }
