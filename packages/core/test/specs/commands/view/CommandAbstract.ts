@@ -20,10 +20,14 @@ describe('CommandAbstract', () => {
     const result = command.callRun(editor);
     const options = {};
     const resOptions = { options, id: command.id, result: returnValue };
-    expect(triggerSpy.mock.calls.length).toBe(3);
+    const resCallOptions = { ...resOptions, type: 'run' };
+
+    expect(triggerSpy.mock.calls.length).toBe(5);
     expect(triggerSpy.mock.calls[0]).toEqual([`${CommandsEvents.runBeforeCommand}test`, { options }]);
     expect(triggerSpy.mock.calls[1]).toEqual([`${CommandsEvents.runCommand}test`, resOptions]);
-    expect(triggerSpy.mock.calls[2]).toEqual([CommandsEvents.run, resOptions]);
+    expect(triggerSpy.mock.calls[2]).toEqual([`${CommandsEvents.callCommand}test`, resCallOptions]);
+    expect(triggerSpy.mock.calls[3]).toEqual([CommandsEvents.run, resOptions]);
+    expect(triggerSpy.mock.calls[4]).toEqual([CommandsEvents.call, resCallOptions]);
 
     expect(runSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(returnValue);
@@ -53,11 +57,14 @@ describe('CommandAbstract', () => {
     const result = command.callStop(editor);
     const options = {};
     const resOptions = { options, id: command.id, result: returnValue };
+    const resCallOptions = { ...resOptions, type: 'stop' };
 
-    expect(triggerSpy.mock.calls.length).toBe(3);
+    expect(triggerSpy.mock.calls.length).toBe(5);
     expect(triggerSpy.mock.calls[0]).toEqual([`${CommandsEvents.stopBeforeCommand}test`, { options }]);
     expect(triggerSpy.mock.calls[1]).toEqual([`${CommandsEvents.stopCommand}test`, resOptions]);
-    expect(triggerSpy.mock.calls[2]).toEqual([CommandsEvents.stop, resOptions]);
+    expect(triggerSpy.mock.calls[2]).toEqual([`${CommandsEvents.callCommand}test`, resCallOptions]);
+    expect(triggerSpy.mock.calls[3]).toEqual([CommandsEvents.stop, resOptions]);
+    expect(triggerSpy.mock.calls[4]).toEqual([CommandsEvents.call, resCallOptions]);
 
     expect(runSpy).toHaveBeenCalledTimes(1);
     expect(result).toEqual(returnValue);

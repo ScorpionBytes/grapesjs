@@ -121,13 +121,16 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
     const sender = options.sender || editor;
     const result = this.run(editor, sender, options);
     const data = { id, result, options };
+    const dataCall = { ...data, type: 'run' };
 
     if (!this.noStop) {
       editor.Commands.active[id] = result;
     }
 
     editor.trigger(`${CommandsEvents.runCommand}${id}`, data);
+    editor.trigger(`${CommandsEvents.callCommand}${id}`, dataCall);
     editor.trigger(CommandsEvents.run, data);
+    editor.trigger(CommandsEvents.call, dataCall);
 
     return result;
   }
@@ -144,9 +147,12 @@ export default class CommandAbstract<O extends ObjectAny = any> extends Model {
     editor.trigger(`${CommandsEvents.stopBeforeCommand}${id}`, { options });
     const result = this.stop(editor, sender, options);
     const data = { id, result, options };
+    const dataCall = { ...data, type: 'stop' };
     delete editor.Commands.active[id];
     editor.trigger(`${CommandsEvents.stopCommand}${id}`, data);
+    editor.trigger(`${CommandsEvents.callCommand}${id}`, dataCall);
     editor.trigger(CommandsEvents.stop, data);
+    editor.trigger(CommandsEvents.call, dataCall);
     return result;
   }
 

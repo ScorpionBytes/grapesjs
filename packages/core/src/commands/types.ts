@@ -59,6 +59,22 @@ export enum CommandsEvents {
    * editor.on('command:stop:before:my-command', ({ options }) => { ... });
    */
   stopBeforeCommand = 'command:stop:before:',
+
+  /**
+   * @event `command:call` Triggered on run or stop of a command.
+   * @example
+   * editor.on('command:call', ({ id, result, options, type }) => {
+   *  console.log('Command id', id, 'command result', result, 'call type', type);
+   * });
+   */
+  call = 'command:call',
+
+  /**
+   * @event `command:call:COMMAND-ID` Triggered on run or stop of a specific command.
+   * @example
+   * editor.on('command:call:my-command', ({ result, options, type }) => { ... });
+   */
+  callCommand = 'command:call:',
 }
 /**{END_EVENTS}*/
 
