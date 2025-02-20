@@ -8,6 +8,7 @@ import { GenericOperation } from './operators/GenericOperator';
 import { LogicalOperation } from './operators/LogicalOperator';
 import { NumberOperation } from './operators/NumberOperator';
 import { StringOperation } from './operators/StringOperations';
+import { isUndefined } from 'underscore';
 
 export const DataConditionType = 'data-condition';
 
@@ -45,8 +46,8 @@ export class DataCondition extends Model<DataConditionPropsDefined> {
     public ifFalse: any,
     opts: { em: EditorModel; onValueChange?: () => void },
   ) {
-    if (typeof condition === 'undefined') {
-      throw new MissingConditionError();
+    if (isUndefined(condition)) {
+      opts.em.logError('No condition was provided to a conditional component.');
     }
 
     const conditionInstance = new Condition(condition, { em: opts.em });
@@ -126,10 +127,5 @@ export class DataCondition extends Model<DataConditionPropsDefined> {
       ifTrue: this.ifTrue,
       ifFalse: this.ifFalse,
     };
-  }
-}
-export class MissingConditionError extends Error {
-  constructor() {
-    super('No condition was provided to a conditional component.');
   }
 }
