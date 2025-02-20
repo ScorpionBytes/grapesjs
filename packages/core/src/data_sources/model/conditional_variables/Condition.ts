@@ -13,23 +13,15 @@ import { Model } from '../../../common';
 export type ConditionProps = ExpressionProps | LogicGroupProps | boolean;
 
 export class Condition extends Model {
-  private condition: ConditionProps;
   private em: EditorModel;
 
   constructor(props: ConditionProps, opts: { em: EditorModel }) {
     super(props);
-    this.condition = props;
     this.em = opts.em;
   }
 
   evaluate(): boolean {
-    return this.evaluateCondition(this.condition);
-  }
-
-  /**
-   * Recursively evaluates conditions and logic groups.
-   */
-  private evaluateCondition(condition: ConditionProps): boolean {
+    const condition = this.get('condition');
     if (typeof condition === 'boolean') return condition;
 
     if (this.isLogicGroup(condition)) {
@@ -49,7 +41,8 @@ export class Condition extends Model {
       return evaluated;
     }
 
-    throw new Error('Invalid condition type.');
+    this.em.logError('Invalid condition type.');
+    return false;
   }
 
   /**
@@ -71,7 +64,9 @@ export class Condition extends Model {
    */
   getDataVariables() {
     const variables: DataVariableProps[] = [];
-    this.extractVariables(this.condition, variables);
+    const condition = this.get('condition');
+
+    this.extractVariables(condition, variables);
     return variables;
   }
 
