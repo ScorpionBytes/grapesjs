@@ -29,81 +29,62 @@ describe('ComponentDataVariable - setPath and setDefaultValue', () => {
 
   test('component updates when path is changed using setPath', () => {
     const cmp = cmpRoot.append({
-      tagName: 'div',
-      type: 'default',
-      components: [
-        {
-          type: DataVariableType,
-          defaultValue: 'default',
-          path: 'ds_id.id1.name',
-        },
-      ],
-    })[0];
+      type: DataVariableType,
+      defaultValue: 'default',
+      path: 'ds_id.id1.name',
+    })[0] as ComponentDataVariable;
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
+    expect(cmp.getPath()).toBe('ds_id.id1.name');
 
-    (cmp.components().at(0) as ComponentDataVariable).setPath('ds_id.id2.name');
+    cmp.setPath('ds_id.id2.name');
     expect(cmp.getEl()?.innerHTML).toContain('Name2');
+    expect(cmp.getPath()).toBe('ds_id.id2.name');
   });
 
   test('component updates when default value is changed using setDefaultValue', () => {
     const cmp = cmpRoot.append({
-      tagName: 'div',
-      type: 'default',
-      components: [
-        {
-          type: DataVariableType,
-          defaultValue: 'default',
-          path: 'unknown.id1.name',
-        },
-      ],
-    })[0];
+      type: DataVariableType,
+      defaultValue: 'default',
+      path: 'unknown.id1.name',
+    })[0] as ComponentDataVariable;
 
     expect(cmp.getEl()?.innerHTML).toContain('default');
+    expect(cmp.getDefaultValue()).toBe('default');
 
-    (cmp.components().at(0) as ComponentDataVariable).setDefaultValue('new default');
+    cmp.setDefaultValue('new default');
     expect(cmp.getEl()?.innerHTML).toContain('new default');
+    expect(cmp.getDefaultValue()).toBe('new default');
   });
 
   test('component updates correctly after path and default value are changed', () => {
     const cmp = cmpRoot.append({
-      tagName: 'div',
-      type: 'default',
-      components: [
-        {
-          type: DataVariableType,
-          defaultValue: 'default',
-          path: 'ds_id.id1.name',
-        },
-      ],
-    })[0];
+      type: DataVariableType,
+      defaultValue: 'default',
+      path: 'ds_id.id1.name',
+    })[0] as ComponentDataVariable;
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
 
-    (cmp.components().at(0) as ComponentDataVariable).setPath('ds_id.id2.name');
+    cmp.setPath('ds_id.id2.name');
     expect(cmp.getEl()?.innerHTML).toContain('Name2');
 
-    (cmp.components().at(0) as ComponentDataVariable).setDefaultValue('new default');
+    cmp.setDefaultValue('new default');
     dsm.all.reset();
     expect(cmp.getEl()?.innerHTML).toContain('new default');
+    expect(cmp.getDefaultValue()).toBe('new default');
   });
 
   test('component updates correctly after path is changed and data is updated', () => {
     const cmp = cmpRoot.append({
-      tagName: 'div',
-      type: 'default',
-      components: [
-        {
-          type: DataVariableType,
-          defaultValue: 'default',
-          path: 'ds_id.id1.name',
-        },
-      ],
-    })[0];
+      type: DataVariableType,
+      defaultValue: 'default',
+      path: 'ds_id.id1.name',
+    })[0] as ComponentDataVariable;
 
     expect(cmp.getEl()?.innerHTML).toContain('Name1');
 
-    (cmp.components().at(0) as ComponentDataVariable).setPath('ds_id.id2.name');
+    cmp.setPath('ds_id.id2.name');
     expect(cmp.getEl()?.innerHTML).toContain('Name2');
 
     const ds = dsm.get('ds_id');

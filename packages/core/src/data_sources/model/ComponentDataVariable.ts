@@ -22,6 +22,14 @@ export default class ComponentDataVariable extends Component {
     this.dataResolver = new DataVariable({ type, path, defaultValue }, opt);
   }
 
+  getPath() {
+    return this.dataResolver.get('path');
+  }
+
+  getDefaultValue() {
+    return this.dataResolver.get('defaultValue');
+  }
+
   getDataValue() {
     return this.dataResolver.getDataValue();
   }
