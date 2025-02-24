@@ -4,18 +4,19 @@ import ParserHtml from '../../parser/model/ParserHtml';
 import Selectors from '../../selector_manager/model/Selectors';
 import { shallowDiff } from '../../utils/mixins';
 import EditorModel from '../../editor/model/Editor';
-import DataVariable, { DataVariableProps, DataVariableType } from '../../data_sources/model/DataVariable';
+import { DataVariableProps } from '../../data_sources/model/DataVariable';
 import DataResolverListener from '../../data_sources/model/DataResolverListener';
 import CssRuleView from '../../css_composer/view/CssRuleView';
 import ComponentView from '../../dom_components/view/ComponentView';
 import Frame from '../../canvas/model/Frame';
+import { DataConditionProps } from '../../data_sources/model/conditional_variables/DataCondition';
 import {
-  DataCondition,
-  DataConditionType,
-  DataConditionProps,
-} from '../../data_sources/model/conditional_variables/DataCondition';
-import { isDataResolver, isDataResolverProps } from '../../data_sources/model/utils';
-import { DataResolverProps } from '../../data_sources/types';
+  getDataResolverInstance,
+  getDataResolverInstanceValue,
+  isDataResolver,
+  isDataResolverProps,
+} from '../../data_sources/model/utils';
+import { DataResolver } from '../../data_sources/types';
 
 export type StyleProps = Record<string, string | string[] | DataVariableProps | DataConditionProps>;
 
@@ -111,7 +112,8 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
 
       const styleValue = newStyle[key];
       if (isDataResolverProps(styleValue)) {
-        const dataResolver = this.getDataResolverInstance(styleValue);
+        const dataResolver = getDataResolverInstance(styleValue, { em: this.em! });
+
         if (dataResolver) {
           newStyle[key] = dataResolver;
           this.listenToDataResolver(dataResolver, key);
@@ -141,25 +143,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
     return newStyle;
   }
 
-  private getDataResolverInstance(props: DataResolverProps) {
-    const em = this.em!;
-    let resolver;
-
-    switch (props.type) {
-      case DataVariableType:
-        resolver = new DataVariable(props, { em });
-        break;
-      case DataConditionType: {
-        const { condition, ifTrue, ifFalse } = props;
-        resolver = new DataCondition(condition, ifTrue, ifFalse, { em });
-        break;
-      }
-    }
-
-    return resolver;
-  }
-
-  listenToDataResolver(resolver: DataVariable | DataCondition, styleProp: string) {
+  listenToDataResolver(resolver: DataResolver, styleProp: string) {
     const resolverListener = this.styleResolverListeners[styleProp];
     if (resolverListener) {
       resolverListener.listenToResolver();
@@ -203,10 +187,7 @@ export default class StyleableModel<T extends ObjectHash = any> extends Model<T>
       }
 
       if (isDataResolverProps(styleValue)) {
-        const resolver = this.getDataResolverInstance(styleValue);
-        if (resolver) {
-          resultStyle[key] = resolver.getDataValue();
-        }
+        resultStyle[key] = getDataResolverInstanceValue(styleValue, { em: this.em! });
       }
 
       if (isDataResolver(styleValue)) {
