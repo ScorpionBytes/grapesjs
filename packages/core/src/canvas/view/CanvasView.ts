@@ -47,6 +47,7 @@ export interface FitViewportOptions {
   gap?: number | { x: number; y: number };
   ignoreHeight?: boolean;
   el?: HTMLElement;
+  zoom?: number;
 }
 
 export default class CanvasView extends ModuleView<Canvas> {
@@ -83,7 +84,7 @@ export default class CanvasView extends ModuleView<Canvas> {
   frames!: FramesView;
   frame?: FrameView;
 
-  private timerZoom?: number;
+  private timerZoom?: NodeJS.Timeout;
 
   private frmOff?: { top: number; left: number; width: number; height: number };
   private cvsOff?: { top: number; left: number; width: number; height: number };
@@ -134,6 +135,7 @@ export default class CanvasView extends ModuleView<Canvas> {
   }
 
   remove(...args: any) {
+    clearTimeout(this.timerZoom);
     this.frames?.remove();
     //@ts-ignore
     this.frames = undefined;
@@ -241,12 +243,12 @@ export default class CanvasView extends ModuleView<Canvas> {
     this.clearOff();
     toolsWrpEl.style.display = 'none';
     em.trigger('canvas:update', ev);
-    this.timerZoom && clearTimeout(this.timerZoom);
+    clearTimeout(this.timerZoom);
     this.timerZoom = setTimeout(() => {
       em.stopDefault(defOpts);
       em.runDefault(defOpts);
       toolsWrpEl.style.display = '';
-    }, 300) as any;
+    }, 300);
   }
 
   updateFramesArea() {
@@ -269,6 +271,7 @@ export default class CanvasView extends ModuleView<Canvas> {
 
   fitViewport(opts: FitViewportOptions = {}) {
     const { em, module, model } = this;
+    this.clearOff();
     const canvasRect = this.getCanvasOffset();
     const { el } = opts;
     const elFrame = el && getComponentView(el)?.frameView;
@@ -303,7 +306,7 @@ export default class CanvasView extends ModuleView<Canvas> {
 
     const zoomRatio = noHeight ? widthRatio : Math.min(widthRatio, heightRatio);
     const zoom = zoomRatio * 100;
-    module.setZoom(zoom);
+    module.setZoom(opts.zoom ?? zoom);
 
     // check for the frame witdh is necessary as we're centering the frame via CSS
     const coordX = -boxRect.x + (frame.width >= canvasWidth ? canvasWidth / 2 - boxWidth / 2 : -gapX);

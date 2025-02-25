@@ -44,10 +44,12 @@ import { CanvasEvents, CanvasRefreshOptions, ToWorldOption } from './types';
 import CanvasView, { FitViewportOptions } from './view/CanvasView';
 import FrameView from './view/FrameView';
 import { DragSource } from '../utils/sorter/types';
+import AutoScroller from '../utils/AutoScroller';
 
 export type CanvasEvent = `${CanvasEvents}`;
 
 export default class CanvasModule extends Module<CanvasConfig> {
+  autoScroller: AutoScroller;
   /**
    * Get configuration object
    * @name getConfig
@@ -83,6 +85,8 @@ export default class CanvasModule extends Module<CanvasConfig> {
     this.model = this.canvas;
     this.startAutoscroll = this.startAutoscroll.bind(this);
     this.stopAutoscroll = this.stopAutoscroll.bind(this);
+    this.autoScroller = new AutoScroller();
+
     return this;
   }
 
@@ -418,11 +422,9 @@ export default class CanvasModule extends Module<CanvasConfig> {
     const canvasOffset = opts.canvasOff || this.canvasRectOffset(el, elRect);
     const targetHeight = targetEl.offsetHeight || 0;
     const targetWidth = targetEl.offsetWidth || 0;
-    const elementRight = elRect.left + elRect.width;
     const canvasView = this.getCanvasView();
     const { scrollTop: canvasScrollTop, scrollLeft: canvasScrollLeft } = canvasView.getCanvasScroll();
     const canvasRect = canvasView.getPosition();
-    const frameOffset = canvasView.getFrameOffset(el);
     const { event } = opts;
 
     const defaultLeftOffset = elRect.width - targetWidth;
@@ -432,7 +434,7 @@ export default class CanvasModule extends Module<CanvasConfig> {
     const canvasLiftLimit = Math.max(-elRect.left + canvasScrollLeft, 0);
     left = Math.max(left, canvasLiftLimit);
 
-    const elementRightLimit = elementRight - targetWidth;
+    const elementRightLimit = elRect.width - targetWidth;
     left = Math.min(left, elementRightLimit);
 
     const canvasRightLimit = canvasRect.width + canvasScrollLeft - targetWidth - elRect.left;
@@ -443,14 +445,15 @@ export default class CanvasModule extends Module<CanvasConfig> {
 
     if (targetReachesCanvasTop) {
       const fullHeight = elRect.height + targetHeight;
-      const elementIsShorterThanFrame = fullHeight < frameOffset.height;
+      const elementIsShorterThanFrame = fullHeight < canvasRect.height;
 
       // Scroll with the window if the top edge is reached and the
       // element is bigger than the canvas
       if (elementIsShorterThanFrame) {
         top = top + fullHeight;
       } else {
-        top = -canvasOffset.top < elRect.height ? -canvasOffset.top : elRect.height;
+        const canvasRelativeTop = -canvasOffset.top + canvasScrollTop;
+        top = canvasRelativeTop < elRect.height ? canvasRelativeTop : elRect.height;
       }
     }
 
@@ -607,6 +610,13 @@ export default class CanvasModule extends Module<CanvasConfig> {
   startAutoscroll(frame?: Frame) {
     const fr = (frame && frame.view) || this.em.getCurrentFrame();
     fr && fr.startAutoscroll();
+
+    if (this.config.scrollableCanvas) {
+      const el = this.getCanvasView().el;
+      this.autoScroller.start(el, el, {
+        zoom: this.em.getZoomDecimal(),
+      });
+    }
   }
 
   /**
@@ -616,6 +626,10 @@ export default class CanvasModule extends Module<CanvasConfig> {
   stopAutoscroll(frame?: Frame) {
     const fr = (frame && frame.view) || this.em.getCurrentFrame();
     fr && fr.stopAutoscroll();
+
+    if (this.config.scrollableCanvas) {
+      this.autoScroller.stop();
+    }
   }
 
   /**
